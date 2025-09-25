@@ -392,16 +392,12 @@ Iterate based on user feedback, add advanced features, consider NFTs if communit
    - *Note: Private repos for game logic*
 
 #### Payment Processing
-5. **Stripe** (2.9% + 30¢ per transaction)
-   - Traditional card payments
-   - Subscription management
-   - Global payment methods
-
-6. **BTCPay Server** (Self-hosted, free) or **Coinbase Commerce**
+5. **BTCPay Server** (Self-hosted, free) or **Coinbase Commerce**
    - Bitcoin payments
    - Ethereum payments
    - No KYC required
    - Lower fees than traditional
+   - **Primary payment method for game**
 
 #### Mobile & Push Notifications
 7. **Expo** (Free tier)
@@ -507,27 +503,26 @@ Iterate based on user feedback, add advanced features, consider NFTs if communit
 
 Create `.env.local` file:
 ```bash
-# Database
-DATABASE_URL="postgresql://..."
-REDIS_URL="rediss://..."
+# Database & Services ✅ CONFIGURED
+SUPABASE_URL="https://oqwgvjazqcffiypqiuui.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xd2d2amF6cWNmZml5cHFpdXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDE2MDUsImV4cCI6MjA3NDQxNzYwNX0.XOq8DReYqW8yzsOBDuA-cUSaSJIe1BUzZsZx5nRqrlY"
+DATABASE_URL="postgresql://postgres:m+@H2peg4GjszqP@db.oqwgvjazqcffiypqiuui.supabase.co:5432/postgres"
 
 # Authentication
-NEXTAUTH_SECRET="your-secret-here"
+NEXTAUTH_SECRET="your-secret-here-change-this"
 NEXTAUTH_URL="http://localhost:3000"
 
-# Payments
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-COINBASE_API_KEY="..."
+# Crypto Payments (BTC/ETH only)
+COINBASE_API_KEY="..." # Set up later
+BTCPAY_SERVER_URL="..." # Set up later
 
-# External Services
-SUPABASE_URL="https://..."
-SUPABASE_ANON_KEY="..."
-EXPO_ACCESS_TOKEN="..."
+# Mobile
+EXPO_ACCESS_TOKEN="..." # Set up when needed
 
 # Game Settings
 GAME_SPEED_MULTIPLIER=10
 MAX_PLAYERS_PER_SERVER=50000
+WORLD_SIZE=401 # 401x401 map like original Travian
 ```
 
 ### Complete Package.json Template

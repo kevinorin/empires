@@ -1,0 +1,190 @@
+// Database URL from Supabase
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User/Player Management - simplified to work with existing schema
+model User {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email       String   @unique
+  username    String   @unique @db.VarChar(50)
+  tribe       Int      @default(1) // 1=Romans, 2=Teutons, 3=Gauls
+  gold        Int      @default(0)
+  premium     Boolean  @default(false)
+  premiumUntil DateTime? @map("premium_until") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  lastActive  DateTime @default(now()) @map("last_active") @db.Timestamptz
+  
+  // Game stats
+  totalVillages Int @default(1) @map("total_villages")
+  population    Int @default(0)
+  
+  // Relationships
+  villages      Village[]
+  alliances     AllianceMember[]
+  sentMessages  Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageRecipient")
+  reports       Report[]
+  
+  @@map("users")
+}
+
+// Villages - core game entity
+model Village {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String   @db.VarChar(100)
+  x         Int      // Map coordinates
+  y         Int
+  capital   Boolean  @default(false)
+  
+  // Resources
+  wood      Int      @default(750)
+  clay      Int      @default(750)
+  iron      Int      @default(750)
+  crop      Int      @default(750)
+  
+  // Storage capacity
+  warehouse Int      @default(800)
+  granary   Int      @default(800)
+  
+  // Population
+  population Int     @default(2)
+  
+  // Relations
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String   @map("owner_id") @db.Uuid
+  
+  buildings Building[]
+  units     Unit[]
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  
+  @@unique([x, y])
+  @@map("villages")
+}
+
+// Buildings in villages
+model Building {
+  id        String   @id @default(cuid())
+  type      Int      // Building type ID (1-40)
+  level     Int      @default(0)
+  field     Int      // Position on village (1-18 for resource fields, 19-40 for buildings)
+  
+  // Construction status
+  isBuilding Boolean  @default(false)
+  completesAt DateTime?
+  
+  // Relations
+  village   Village  @relation(fields: [villageId], references: [id])
+  villageId String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([villageId, field])
+  @@map("buildings")
+}
+
+// Military units
+model Unit {
+  id        String   @id @default(cuid())
+  type      Int      // Unit type ID (1-50)
+  quantity  Int      @default(0)
+  
+  // Training status
+  isTraining Boolean  @default(false)
+  completesAt DateTime?
+  
+  // Relations
+  village   Village  @relation(fields: [villageId], references: [id])
+  villageId String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("units")
+}
+
+// Alliance system
+model Alliance {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  tag         String   @unique @db.VarChar(8)
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  members     AllianceMember[]
+  
+  @@map("alliances")
+}
+
+model AllianceMember {
+  id        String   @id @default(cuid())
+  role      String   @default("member") // member, leader, diplomat
+  joinedAt  DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  alliance  Alliance @relation(fields: [allianceId], references: [id])
+  allianceId String
+  
+  @@unique([userId, allianceId])
+  @@map("alliance_members")
+}
+
+// Messages/Communication
+model Message {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  subject   String   @db.VarChar(200)
+  content   String
+  read      Boolean  @default(false)
+  type      String   @default("personal") @db.VarChar(20) // personal, alliance, system
+  
+  sender      User     @relation("MessageSender", fields: [senderId], references: [id])
+  senderId    String   @map("sender_id") @db.Uuid
+  recipient   User     @relation("MessageRecipient", fields: [recipientId], references: [id])
+  recipientId String   @map("recipient_id") @db.Uuid
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  
+  @@map("messages")
+}
+
+// Battle reports and notifications
+model Report {
+  id        String   @id @default(cuid())
+  type      String   // attack, defense, trade, etc.
+  title     String
+  content   Json     // Store battle details as JSON
+  read      Boolean  @default(false)
+  
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  
+  createdAt DateTime @default(now())
+  
+  @@map("reports")
+}
+
+// Game events for real-time updates
+model GameEvent {
+  id        String   @id @default(cuid())
+  type      String   // building_complete, attack_arrived, etc.
+  data      Json     // Event-specific data
+  processed Boolean  @default(false)
+  executeAt DateTime
+  
+  createdAt DateTime @default(now())
+  
+  @@map("game_events")
+}
