@@ -60,6 +60,12 @@ CREATE TABLE villages (
     warehouse INTEGER DEFAULT 800 CHECK (warehouse > 0),
     granary INTEGER DEFAULT 800 CHECK (granary > 0),
     
+    -- Production rates (per hour)
+    wood_production INTEGER DEFAULT 6 CHECK (wood_production >= 0),
+    clay_production INTEGER DEFAULT 6 CHECK (clay_production >= 0),
+    iron_production INTEGER DEFAULT 6 CHECK (iron_production >= 0),
+    crop_production INTEGER DEFAULT 6 CHECK (crop_production >= 0),
+    
     -- Population
     population INTEGER DEFAULT 2 CHECK (population >= 0),
     
@@ -169,6 +175,26 @@ CREATE TABLE game_events (
     
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Helper function to add resources to a village (for refunds, etc.)
+CREATE OR REPLACE FUNCTION add_village_resources(
+    village_id UUID,
+    wood_amount INTEGER DEFAULT 0,
+    clay_amount INTEGER DEFAULT 0,
+    iron_amount INTEGER DEFAULT 0,
+    crop_amount INTEGER DEFAULT 0
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE villages 
+    SET 
+        wood = LEAST(wood + wood_amount, warehouse),
+        clay = LEAST(clay + clay_amount, warehouse),
+        iron = LEAST(iron + iron_amount, warehouse),
+        crop = LEAST(crop + crop_amount, granary),
+        updated_at = NOW()
+    WHERE id = village_id;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Indexes for performance
 CREATE INDEX idx_villages_owner ON villages(owner_id);

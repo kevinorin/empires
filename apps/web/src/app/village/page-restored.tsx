@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useVillage } from '@/hooks/useVillage'
 import { Building, Plus, Hammer, Sword, Shield, Users, Home, ArrowLeft } from 'lucide-react'
 import AuthModal from '@/components/AuthModal'
 import WorldMap from '@/components/WorldMap'
@@ -149,7 +148,6 @@ const initialResourceFields: ResourceField[] = RESOURCE_HOTSPOTS.map(hotspot => 
 
 export default function VillagePageMock() {
   const { user, profile, loading: authLoading } = useAuth()
-  const { village: dbVillage, loading: villageLoading, updateResources } = useVillage()
   const [village, setVillage] = useState<MockVillage>(mockVillage)
   const [buildingSlots, setBuildingSlots] = useState<BuildingSlot[]>(initialBuildingSlots)
   const [resourceFields, setResourceFields] = useState<ResourceField[]>(initialResourceFields)
@@ -184,25 +182,6 @@ export default function VillagePageMock() {
     // Cleanup
     return () => window.removeEventListener('resize', updateWindowSize)
   }, [])
-
-  // Sync database village data with UI state (preserves all existing UI behavior)
-  useEffect(() => {
-    if (dbVillage && !villageLoading) {
-      setVillage(prev => ({
-        ...prev,
-        name: dbVillage.name,
-        wood: dbVillage.wood,
-        clay: dbVillage.clay,
-        iron: dbVillage.iron,
-        crop: dbVillage.crop,
-        wood_production: dbVillage.wood_production,
-        clay_production: dbVillage.clay_production,
-        iron_production: dbVillage.iron_production,
-        crop_production: dbVillage.crop_production,
-        population: dbVillage.population
-      }))
-    }
-  }, [dbVillage, villageLoading])
 
   // Debug logging
   console.log('Village page render:', { user: !!user, profile: !!profile, authLoading })
@@ -354,16 +333,6 @@ export default function VillagePageMock() {
         backgroundSize: 'auto', // Don't scale the background - keep original size
       }}
     >
-      {/* Database Status Indicator */}
-      {dbVillage ? (
-        <div className="fixed top-4 right-4 z-50 bg-green-500/90 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg">
-          ✅ Database Connected
-        </div>
-      ) : (
-        <div className="fixed top-4 right-4 z-50 bg-yellow-500/90 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg">
-          ⚠️ Demo Mode
-        </div>
-      )}
       {/* Authentic Travian Header - Absolutely positioned overlay */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-700 border-b-4 border-amber-800 shadow-lg">
         <div className="container mx-auto px-4">
