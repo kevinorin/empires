@@ -1,6 +1,25 @@
 -- Empires Game Database Schema
 -- Execute this in Supabase SQL Editor or any PostgreSQL client
 -- Version: 1.0.0
+-- WARNING: This will DELETE ALL existing data and start fresh!
+
+-- Drop existing tables (if they exist) to start fresh
+DROP TABLE IF EXISTS unit_types CASCADE;
+DROP TABLE IF EXISTS building_types CASCADE;
+DROP TABLE IF EXISTS game_events CASCADE;
+DROP TABLE IF EXISTS reports CASCADE;
+DROP TABLE IF EXISTS messages CASCADE;
+DROP TABLE IF EXISTS alliance_members CASCADE;
+DROP TABLE IF EXISTS alliances CASCADE;
+DROP TABLE IF EXISTS units CASCADE;
+DROP TABLE IF EXISTS buildings CASCADE;
+DROP TABLE IF EXISTS villages CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Drop existing functions and triggers
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user();
+DROP FUNCTION IF EXISTS update_updated_at_column();
 
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -10,7 +29,7 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
-    tribe INTEGER DEFAULT 1 CHECK (tribe IN (1, 2, 3)), -- 1=Romans, 2=Teutons, 3=Gauls
+    tribe INTEGER DEFAULT 1 CHECK (tribe IN (1, 2, 3, 4, 5)), -- 1=Romans, 2=Teutons, 3=Gauls, 4=Egyptians, 5=Nubians
     gold INTEGER DEFAULT 0 CHECK (gold >= 0),
     premium BOOLEAN DEFAULT FALSE,
     premium_until TIMESTAMP WITH TIME ZONE,
@@ -205,16 +224,159 @@ ALTER TABLE units ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
--- Basic RLS policies (can be expanded later)
-CREATE POLICY "Users can view own data" ON users FOR ALL USING (auth.uid()::text = id::text);
-CREATE POLICY "Users can view own villages" ON villages FOR ALL USING (auth.uid()::text = owner_id::text);
-CREATE POLICY "Users can view buildings in own villages" ON buildings FOR ALL USING (
+-- Authentication Functions and Triggers
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  -- Create user profile
+  INSERT INTO public.users (id, email, username, tribe)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
+    COALESCE((new.raw_user_meta_data->>'tribe')::integer, 1)
+  );
+  
+  -- Create initial village
+  INSERT INTO public.villages (name, x, y, owner_id)
+  VALUES (
+    'Capital City',
+    0, -- Can be randomized later
+    0, -- Can be randomized later  
+    new.id
+  );
+  
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to automatically create user profile and village on signup
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- RLS Policies for proper authentication
+CREATE POLICY "Users can manage own data" ON users FOR ALL 
+USING (auth.uid()::text = id::text)
+WITH CHECK (auth.uid()::text = id::text);
+
+CREATE POLICY "Users can manage own villages" ON villages FOR ALL 
+USING (auth.uid()::text = owner_id::text)
+WITH CHECK (auth.uid()::text = owner_id::text);
+
+CREATE POLICY "Users can manage buildings in own villages" ON buildings FOR ALL USING (
+    village_id IN (SELECT id FROM villages WHERE owner_id::text = auth.uid()::text)
+) WITH CHECK (
     village_id IN (SELECT id FROM villages WHERE owner_id::text = auth.uid()::text)
 );
-CREATE POLICY "Users can view units in own villages" ON units FOR ALL USING (
+
+CREATE POLICY "Users can manage units in own villages" ON units FOR ALL USING (
+    village_id IN (SELECT id FROM villages WHERE owner_id::text = auth.uid()::text)
+) WITH CHECK (
     village_id IN (SELECT id FROM villages WHERE owner_id::text = auth.uid()::text)
 );
-CREATE POLICY "Users can view own messages" ON messages FOR ALL USING (
+
+CREATE POLICY "Users can manage own messages" ON messages FOR ALL USING (
+    auth.uid()::text = sender_id::text OR auth.uid()::text = recipient_id::text
+) WITH CHECK (
     auth.uid()::text = sender_id::text OR auth.uid()::text = recipient_id::text
 );
-CREATE POLICY "Users can view own reports" ON reports FOR ALL USING (auth.uid()::text = user_id::text);
+
+CREATE POLICY "Users can manage own reports" ON reports FOR ALL 
+USING (auth.uid()::text = user_id::text)
+WITH CHECK (auth.uid()::text = user_id::text);
+
+-- Grant permissions
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON public.users TO authenticated;
+GRANT ALL ON public.villages TO authenticated;
+GRANT ALL ON public.buildings TO authenticated;
+GRANT ALL ON public.units TO authenticated;
+GRANT ALL ON public.alliances TO authenticated;
+GRANT ALL ON public.alliance_members TO authenticated;
+GRANT ALL ON public.messages TO authenticated;
+GRANT ALL ON public.reports TO authenticated;
+GRANT ALL ON public.game_events TO authenticated;
+GRANT SELECT ON public.users TO anon;
+
+-- Seed Data: Building Types Reference (optional reference table)
+CREATE TABLE IF NOT EXISTS building_types (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    category VARCHAR(20) -- resource, military, infrastructure
+);
+
+INSERT INTO building_types (id, name, description, category) VALUES
+(1, 'Woodcutter', 'Produces wood', 'resource'),
+(2, 'Clay Pit', 'Produces clay', 'resource'),
+(3, 'Iron Mine', 'Produces iron', 'resource'),
+(4, 'Cropland', 'Produces crop', 'resource'),
+(10, 'Warehouse', 'Stores wood, clay, and iron', 'infrastructure'),
+(11, 'Granary', 'Stores crop', 'infrastructure'),
+(15, 'Main Building', 'Village administration center', 'infrastructure'),
+(16, 'Rally Point', 'Military coordination', 'military'),
+(19, 'Barracks', 'Trains infantry', 'military'),
+(20, 'Stable', 'Trains cavalry', 'military'),
+(21, 'Workshop', 'Builds siege engines', 'military')
+ON CONFLICT (id) DO NOTHING;
+
+-- Unit Types Reference (optional reference table)
+CREATE TABLE IF NOT EXISTS unit_types (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    tribe INTEGER, -- 1=Romans, 2=Teutons, 3=Gauls, 4=Egyptians, 5=Nubians, null=all
+    category VARCHAR(20) -- infantry, cavalry, siege
+);
+
+INSERT INTO unit_types (id, name, tribe, category) VALUES
+-- Roman units
+(1, 'Legionnaire', 1, 'infantry'),
+(2, 'Praetorian', 1, 'infantry'),
+(3, 'Imperian', 1, 'infantry'),
+(4, 'Equites Legati', 1, 'cavalry'),
+(5, 'Equites Imperatoris', 1, 'cavalry'),
+(6, 'Equites Caesaris', 1, 'cavalry'),
+(7, 'Battering Ram', 1, 'siege'),
+(8, 'Fire Catapult', 1, 'siege'),
+-- Teuton units
+(11, 'Clubswinger', 2, 'infantry'),
+(12, 'Spearfighter', 2, 'infantry'),
+(13, 'Axefighter', 2, 'infantry'),
+(14, 'Scout', 2, 'cavalry'),
+(15, 'Paladin', 2, 'cavalry'),
+(16, 'Teutonic Knight', 2, 'cavalry'),
+(17, 'Ram', 2, 'siege'),
+(18, 'Catapult', 2, 'siege'),
+-- Gaul units
+(21, 'Phalanx', 3, 'infantry'),
+(22, 'Swordsman', 3, 'infantry'),
+(23, 'Pathfinder', 3, 'cavalry'),
+(24, 'Theutates Thunder', 3, 'cavalry'),
+(25, 'Druidrider', 3, 'cavalry'),
+(26, 'Haeduan', 3, 'cavalry'),
+(27, 'Ram', 3, 'siege'),
+(28, 'Trebuchet', 3, 'siege'),
+-- Egyptian units
+(31, 'Spearman', 4, 'infantry'),
+(32, 'Archer', 4, 'infantry'),
+(33, 'Khopesh Warrior', 4, 'infantry'),
+(34, 'Chariot Archer', 4, 'cavalry'),
+(35, 'War Chariot', 4, 'cavalry'),
+(36, 'Camel Rider', 4, 'cavalry'),
+(37, 'Siege Tower', 4, 'siege'),
+(38, 'Onager', 4, 'siege'),
+-- Nubian units
+(41, 'Kushite Spearman', 5, 'infantry'),
+(42, 'Nubian Archer', 5, 'infantry'),
+(43, 'Desert Warrior', 5, 'infantry'),
+(44, 'Camel Scout', 5, 'cavalry'),
+(45, 'Royal Guard', 5, 'cavalry'),
+(46, 'War Elephant', 5, 'cavalry'),
+(47, 'Battering Ram', 5, 'siege'),
+(48, 'Scorpion', 5, 'siege')
+ON CONFLICT (id) DO NOTHING;
+
+COMMENT ON TABLE building_types IS 'Reference data for building types';
+COMMENT ON TABLE unit_types IS 'Reference data for unit types by tribe';

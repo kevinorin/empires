@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Swords, Shield, Crown, Users, LogOut, User } from 'lucide-react'
@@ -28,11 +28,7 @@ export default function HomePage() {
               <div>
                 <div className="font-bold">{profile.username}</div>
                 <div className="text-sm opacity-75">
-                  {profile.tribe === 1 ? 'Romans' :
-                    profile.tribe === 2 ? 'Teutons' :
-                      profile.tribe === 3 ? 'Gauls' :
-                        profile.tribe === 4 ? 'Egyptians' :
-                          profile.tribe === 5 ? 'Nubians' : 'Unknown'} Tribe
+                  {profile.tribe === 1 ? 'Romans' : profile.tribe === 2 ? 'Teutons' : 'Gauls'} Tribe
                 </div>
               </div>
             </div>
@@ -45,7 +41,7 @@ export default function HomePage() {
                   ⭐ Premium
                 </div>
               )}
-              <button
+              <button 
                 onClick={signOut}
                 className="text-gray-400 hover:text-white"
                 title="Sign Out"
@@ -66,14 +62,14 @@ export default function HomePage() {
           </p>
           <div className="flex justify-center gap-4">
             {user ? (
-              <a
+              <a 
                 href="/village"
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-lg text-lg transition-colors inline-block"
               >
                 Enter Village
               </a>
             ) : (
-              <button
+              <button 
                 onClick={() => setShowAuthModal(true)}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-lg text-lg transition-colors"
               >
@@ -160,13 +156,11 @@ export default function HomePage() {
       </div>
 
       {/* Auth Modal */}
-      <AuthModal
+      <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           console.log('Authentication successful!')
-          setShowAuthModal(false)
-          // The useAuth hook will automatically update via onAuthStateChange
         }}
       />
     </div>

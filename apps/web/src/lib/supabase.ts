@@ -1,25 +1,9 @@
-import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
-// Client-side Supabase client
-export const createClient = () => {
-  return createClientComponentClient({
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  })
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Server-side Supabase client
-export const createServerClient = () => {
-  const cookieStore = cookies()
-  return createServerComponentClient({ cookies: () => cookieStore })
-}
-
-// Legacy client for immediate use (we'll phase this out)
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://oqwgvjazqcffiypqiuui.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xd2d2amF6cWNmZml5cHFpdXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDE2MDUsImV4cCI6MjA3NDQxNzYwNX0.XOq8DReYqW8yzsOBDuA-cUSaSJIe1BUzZsZx5nRqrlY'
-export const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Database types (we'll expand this as we build)
 export interface Database {
@@ -30,9 +14,9 @@ export interface Database {
           id: string
           username: string
           email: string
-          tribe: 'romans' | 'teutons' | 'gauls'
+          tribe: number
           gold: number
-          silver: number
+          premium: boolean
           created_at: string
           last_active: string
         }
@@ -40,9 +24,9 @@ export interface Database {
           id: string
           username: string
           email: string
-          tribe: 'romans' | 'teutons' | 'gauls'
+          tribe: number
           gold?: number
-          silver?: number
+          premium?: boolean
           created_at?: string
           last_active?: string
         }
