@@ -299,71 +299,92 @@ export default function VillagePageMock() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-800 via-green-700 to-green-900">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-yellow-800 to-yellow-600 p-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-white hover:text-yellow-200">
-              <ArrowLeft className="w-6 h-6" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-white">{village.name}</h1>
-              <p className="text-yellow-100 text-sm">({village.x}|{village.y})</p>
+    <div 
+      className="min-h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/assets/background.jpg')" }}
+    >
+      {/* Authentic Travian Header */}
+      <div className="bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-700 border-b-4 border-amber-800 shadow-lg">
+        <div className="container mx-auto px-4">
+          {/* Top Bar with Logo and User Info */}
+          <div className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-4">
+              <div className="text-2xl font-bold text-amber-100 tracking-wider">
+                🏛️ TRAVIAN
+              </div>
+              <div className="text-amber-200 text-sm">
+                Server: {village.name}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="text-amber-100 text-sm">
+                Player: {profile?.username || user?.email?.split('@')[0] || 'Guest'}
+              </div>
+              <Link
+                href="/"
+                className="text-amber-200 hover:text-white text-sm"
+              >
+                Logout
+              </Link>
             </div>
           </div>
 
-          {/* Resources Bar */}
-          <div className="flex items-center gap-4 bg-black/20 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-1 text-white">
-              <Image src="/assets/resources/1.gif" alt="Wood" width={20} height={20} />
-              <span className="font-bold">{village.wood}</span>
-              <span className="text-green-300 text-xs">+{village.wood_production}/h</span>
+          {/* Resources Bar - Authentic Travian Style */}
+          <div className="flex items-center justify-between py-2 bg-black/20 rounded-lg px-4 mb-2">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-1">
+                <Image src="/assets/resources/1.gif" alt="Wood" width={18} height={18} className="drop-shadow-sm" />
+                <span className="text-white font-bold text-sm">{village.wood}</span>
+                <span className="text-green-300 text-xs">({village.wood_production > 0 ? '+' : ''}{village.wood_production})</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Image src="/assets/resources/2.gif" alt="Clay" width={18} height={18} className="drop-shadow-sm" />
+                <span className="text-white font-bold text-sm">{village.clay}</span>
+                <span className="text-green-300 text-xs">({village.clay_production > 0 ? '+' : ''}{village.clay_production})</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Image src="/assets/resources/3.gif" alt="Iron" width={18} height={18} className="drop-shadow-sm" />
+                <span className="text-white font-bold text-sm">{village.iron}</span>
+                <span className="text-green-300 text-xs">({village.iron_production > 0 ? '+' : ''}{village.iron_production})</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Image src="/assets/resources/4.gif" alt="Crop" width={18} height={18} className="drop-shadow-sm" />
+                <span className="text-white font-bold text-sm">{village.crop}</span>
+                <span className="text-green-300 text-xs">({village.crop_production > 0 ? '+' : ''}{village.crop_production})</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 text-white">
-              <Image src="/assets/resources/2.gif" alt="Clay" width={20} height={20} />
-              <span className="font-bold">{village.clay}</span>
-              <span className="text-green-300 text-xs">+{village.clay_production}/h</span>
-            </div>
-            <div className="flex items-center gap-1 text-white">
-              <Image src="/assets/resources/3.gif" alt="Iron" width={20} height={20} />
-              <span className="font-bold">{village.iron}</span>
-              <span className="text-green-300 text-xs">+{village.iron_production}/h</span>
-            </div>
-            <div className="flex items-center gap-1 text-white">
-              <Image src="/assets/resources/4.gif" alt="Crop" width={20} height={20} />
-              <span className="font-bold">{village.crop}</span>
-              <span className="text-green-300 text-xs">+{village.crop_production}/h</span>
-            </div>
-            <div className="flex items-center gap-1 text-white ml-4">
+            <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-blue-300" />
-              <span>{village.population}</span>
+              <span className="text-white font-bold text-sm">{village.population}</span>
+              <span className="text-gray-300 text-xs">Population</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-yellow-700 border-b border-yellow-600">
-        <div className="container mx-auto flex">
-          <button
-            onClick={() => setIsVillageView(true)}
-            className={`px-6 py-3 font-semibold transition-colors ${isVillageView
-              ? 'bg-yellow-600 text-white border-b-2 border-yellow-300'
-              : 'text-yellow-100 hover:text-white hover:bg-yellow-600'
+          {/* Navigation Tabs - Authentic Style */}
+          <div className="flex items-center gap-0">
+            <button
+              onClick={() => setIsVillageView(true)}
+              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${
+                isVillageView
+                  ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
+                  : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
               }`}
-          >
-            Village Center
-          </button>
-          <button
-            onClick={() => setIsVillageView(false)}
-            className={`px-6 py-3 font-semibold transition-colors ${!isVillageView
-              ? 'bg-yellow-600 text-white border-b-2 border-yellow-300'
-              : 'text-yellow-100 hover:text-white hover:bg-yellow-600'
+            >
+              Village Center
+            </button>
+            <button
+              onClick={() => setIsVillageView(false)}
+              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${
+                !isVillageView
+                  ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
+                  : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
               }`}
-          >
-            Resource Fields
-          </button>
+            >
+              Resource Fields
+            </button>
+            <div className="flex-1 border-b-2 border-amber-300"></div>
+          </div>
         </div>
       </div>
 
