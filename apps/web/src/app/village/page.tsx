@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { Building, Plus, Hammer, Sword, Shield, Users, Home, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 import AuthModal from '@/components/AuthModal'
 import Image from 'next/image'
 
@@ -100,33 +99,33 @@ const VILLAGE_HOTSPOTS = [
   { id: 38, coords: "396,396,417,381,417,382,445,383,465,397,464,412,443,424,413,424,394,410", buildingType: 0, level: 0, name: 'Empty Lot' },
 ]
 
-// Resource field hotspots (positioned around the village)
+// Resource field hotspots (authentic Travian field layout - coordinates for resource background)
 const RESOURCE_HOTSPOTS = [
-  // Wood fields (forest area)
-  { id: 1, x: 15, y: 15, width: 10, height: 8, type: 'wood', level: 1 },
-  { id: 2, x: 5, y: 25, width: 10, height: 8, type: 'wood', level: 2 },
-  { id: 3, x: 10, y: 35, width: 10, height: 8, type: 'wood', level: 1 },
-  { id: 4, x: 5, y: 50, width: 10, height: 8, type: 'wood', level: 3 },
+  // Wood fields (top-left forests)
+  { id: 1, coords: "89,194,119,178,149,194,119,211", type: 'wood', level: 2 },
+  { id: 2, coords: "170,134,200,118,230,134,200,151", type: 'wood', level: 1 },
+  { id: 3, coords: "50,134,80,118,110,134,80,151", type: 'wood', level: 3 },
+  { id: 4, coords: "130,254,160,238,190,254,160,271", type: 'wood', level: 1 },
 
-  // Clay fields (clay pits)
-  { id: 5, x: 85, y: 15, width: 10, height: 8, type: 'clay', level: 2 },
-  { id: 6, x: 90, y: 25, width: 10, height: 8, type: 'clay', level: 1 },
-  { id: 7, x: 85, y: 35, width: 10, height: 8, type: 'clay', level: 2 },
-  { id: 8, x: 90, y: 50, width: 10, height: 8, type: 'clay', level: 1 },
+  // Clay fields (top-right clay pits)  
+  { id: 5, coords: "513,134,543,118,573,134,543,151", type: 'clay', level: 2 },
+  { id: 6, coords: "472,194,502,178,532,194,502,211", type: 'clay', level: 1 },
+  { id: 7, coords: "554,194,584,178,614,194,584,211", type: 'clay', level: 2 },
+  { id: 8, coords: "433,254,463,238,493,254,463,271", type: 'clay', level: 1 },
 
-  // Iron fields (mountains)
-  { id: 9, x: 25, y: 5, width: 10, height: 8, type: 'iron', level: 1 },
-  { id: 10, x: 40, y: 8, width: 10, height: 8, type: 'iron', level: 2 },
-  { id: 11, x: 55, y: 5, width: 10, height: 8, type: 'iron', level: 1 },
-  { id: 12, x: 75, y: 8, width: 10, height: 8, type: 'iron', level: 2 },
+  // Iron fields (bottom mountains)
+  { id: 9, coords: "270,464,300,448,330,464,300,481", type: 'iron', level: 1 },
+  { id: 10, coords: "350,404,380,388,410,404,380,421", type: 'iron', level: 2 },
+  { id: 11, coords: "210,404,240,388,270,404,240,421", type: 'iron', level: 1 },
+  { id: 12, coords: "150,344,180,328,210,344,180,361", type: 'iron', level: 2 },
 
-  // Crop fields (farms)
-  { id: 13, x: 25, y: 85, width: 10, height: 8, type: 'crop', level: 2 },
-  { id: 14, x: 40, y: 88, width: 10, height: 8, type: 'crop', level: 3 },
-  { id: 15, x: 55, y: 85, width: 10, height: 8, type: 'crop', level: 2 },
-  { id: 16, x: 75, y: 88, width: 10, height: 8, type: 'crop', level: 1 },
-  { id: 17, x: 10, y: 75, width: 10, height: 8, type: 'crop', level: 2 },
-  { id: 18, x: 85, y: 75, width: 10, height: 8, type: 'crop', level: 1 },
+  // Crop fields (scattered farms) - 6 fields total like authentic Travian
+  { id: 13, coords: "370,344,400,328,430,344,400,361", type: 'crop', level: 2 },
+  { id: 14, coords: "250,344,280,328,310,344,280,361", type: 'crop', level: 3 },
+  { id: 15, coords: "310,404,340,388,370,404,340,421", type: 'crop', level: 2 },
+  { id: 16, coords: "330,464,360,448,390,464,360,481", type: 'crop', level: 1 },
+  { id: 17, coords: "390,344,420,328,450,344,420,361", type: 'crop', level: 2 },
+  { id: 18, coords: "270,404,300,388,330,404,300,421", type: 'crop', level: 1 },
 ]
 
 // Initial building state based on hotspots
@@ -156,7 +155,32 @@ export default function VillagePageMock() {
   const [showBuildModal, setShowBuildModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [isVillageView, setIsVillageView] = useState(true) // Toggle between village and fields
+  const [showStatisticsModal, setShowStatisticsModal] = useState(false)
+  const [showReportsModal, setShowReportsModal] = useState(false)
+  const [showMessagesModal, setShowMessagesModal] = useState(false)
+  const [showAllianceModal, setShowAllianceModal] = useState(false)
+  const [isVillageView, setIsVillageView] = useState(true) // Toggle between village and resources
+  const [currentNavSection, setCurrentNavSection] = useState('village') // Track navigation section
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
+
+  // Handle window resize for fixed background positioning
+  useEffect(() => {
+    const updateWindowSize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+
+    // Set initial size
+    updateWindowSize()
+
+    // Add event listener
+    window.addEventListener('resize', updateWindowSize)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', updateWindowSize)
+  }, [])
 
   // Debug logging
   console.log('Village page render:', { user: !!user, profile: !!profile, authLoading })
@@ -299,22 +323,23 @@ export default function VillagePageMock() {
   }
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
-      style={{ 
-        backgroundImage: isVillageView 
-          ? "url('/assets/bgBuildings-main-background.jpg')" 
-          : "url('/assets/bgResources-main-background.jpg')" 
+    <div id="background" className="relative z-10 w-full min-h-screen overflow-hidden bg-no-repeat"
+      style={{
+        backgroundImage: currentNavSection === 'resources'
+          ? "url('/assets/bgResources-main-background.jpg')"
+          : "url('/assets/bgBuildings-main-background.jpg')",
+        backgroundPosition: 'center top', // Authentic Travian positioning
+        backgroundSize: 'auto', // Don't scale the background - keep original size
       }}
     >
-      {/* Authentic Travian Header */}
-      <div className="bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-700 border-b-4 border-amber-800 shadow-lg">
+      {/* Authentic Travian Header - Absolutely positioned overlay */}
+      <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-700 border-b-4 border-amber-800 shadow-lg">
         <div className="container mx-auto px-4">
           {/* Top Bar with Logo and User Info */}
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center gap-4">
               <div className="text-2xl font-bold text-amber-100 tracking-wider">
-                🏛️ TRAVIAN
+                🏛️ EMPIRES
               </div>
               <div className="text-amber-200 text-sm">
                 Server: {village.name}
@@ -325,35 +350,159 @@ export default function VillagePageMock() {
               <div className="text-amber-100 text-sm">
                 Player: {profile?.username || user?.email?.split('@')[0] || 'Guest'}
               </div>
-              <Link
-                href="/"
+              <button
+                onClick={() => {
+                  // Handle logout
+                  window.location.href = '/'
+                }}
                 className="text-amber-200 hover:text-white text-sm"
               >
                 Logout
-              </Link>
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation Sprite Bar - Authentic Travian Style */}
+          <div className="flex items-center justify-center py-2 mb-2">
+            <div className="flex items-center gap-1" id="navigation">
+              {/* Buildings Navigation */}
+              <button
+                onClick={() => {
+                  setCurrentNavSection('village')
+                  setIsVillageView(true)
+                }}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '-62px 0', // Village center icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Village Center
+                </div>
+              </button>
+
+              {/* Resources Navigation */}
+              <button
+                onClick={() => {
+                  setCurrentNavSection('resources')
+                  setIsVillageView(false)
+                }}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '0 0', // Resources icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Resources
+                </div>
+              </button>
+
+
+
+              {/* Statistics Navigation */}
+              <button
+                onClick={() => setShowStatisticsModal(true)}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '-124px 0', // Statistics icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Statistics
+                </div>
+              </button>
+
+              {/* Reports Navigation */}
+              <button
+                onClick={() => setShowReportsModal(true)}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '-186px 0', // Reports icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Reports
+                </div>
+              </button>
+
+              {/* Messages Navigation */}
+              <button
+                onClick={() => setShowMessagesModal(true)}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '-248px 0', // Messages icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Messages
+                </div>
+              </button>
+
+              {/* Alliance Navigation */}
+              <button
+                onClick={() => setShowAllianceModal(true)}
+                className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
+              >
+                <div
+                  className="w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  style={{
+                    backgroundImage: "url('/assets/interface/navigation.png')",
+                    backgroundPosition: '-310px 0', // Alliance icon
+                  }}
+                />
+                <div className="w-16 h-16 flex items-center justify-center" />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Alliance
+                </div>
+              </button>
             </div>
           </div>
 
           {/* Resources Bar - Authentic Travian Style */}
-          <div className="flex items-center justify-between py-2 bg-black/20 rounded-lg px-4 mb-2">
+          <div className="flex items-center justify-between py-2 bg-black/20 rounded-lg px-4 mb-2 mx-auto max-w-3xl">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-1">
-                <Image src="/assets/resources/1.gif" alt="Wood" width={18} height={18} className="drop-shadow-sm" />
+                <Image src="/assets/resources/lumber_small.png" alt="Wood" width={18} height={18} className="drop-shadow-sm" />
                 <span className="text-white font-bold text-sm">{village.wood}</span>
                 <span className="text-green-300 text-xs">({village.wood_production > 0 ? '+' : ''}{village.wood_production})</span>
               </div>
               <div className="flex items-center gap-1">
-                <Image src="/assets/resources/2.gif" alt="Clay" width={18} height={18} className="drop-shadow-sm" />
+                <Image src="/assets/resources/clay_small.png" alt="Clay" width={18} height={18} className="drop-shadow-sm" />
                 <span className="text-white font-bold text-sm">{village.clay}</span>
                 <span className="text-green-300 text-xs">({village.clay_production > 0 ? '+' : ''}{village.clay_production})</span>
               </div>
               <div className="flex items-center gap-1">
-                <Image src="/assets/resources/3.gif" alt="Iron" width={18} height={18} className="drop-shadow-sm" />
+                <Image src="/assets/resources/iron_small.png" alt="Iron" width={18} height={18} className="drop-shadow-sm" />
                 <span className="text-white font-bold text-sm">{village.iron}</span>
                 <span className="text-green-300 text-xs">({village.iron_production > 0 ? '+' : ''}{village.iron_production})</span>
               </div>
               <div className="flex items-center gap-1">
-                <Image src="/assets/resources/4.gif" alt="Crop" width={18} height={18} className="drop-shadow-sm" />
+                <Image src="/assets/resources/crop_small.png" alt="Crop" width={18} height={18} className="drop-shadow-sm" />
                 <span className="text-white font-bold text-sm">{village.crop}</span>
                 <span className="text-green-300 text-xs">({village.crop_production > 0 ? '+' : ''}{village.crop_production})</span>
               </div>
@@ -364,198 +513,261 @@ export default function VillagePageMock() {
               <span className="text-gray-300 text-xs">Population</span>
             </div>
           </div>
-
-          {/* Navigation Tabs - Authentic Style */}
-          <div className="flex items-center gap-0">
-            <button
-              onClick={() => setIsVillageView(true)}
-              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${isVillageView
-                  ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
-                  : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
-                }`}
-            >
-              Village Center
-            </button>
-            <button
-              onClick={() => setIsVillageView(false)}
-              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${!isVillageView
-                  ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
-                  : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
-                }`}
-            >
-              Resource Fields
-            </button>
-            <div className="flex-1 border-b-2 border-amber-300"></div>
-          </div>
         </div>
       </div>
 
-      {/* Main Content Area - Authentic Travian Layout */}
-      <div className="container mx-auto p-4">
-        <div className="bg-amber-50/95 rounded-lg shadow-2xl border-4 border-amber-600 overflow-hidden">
-          {/* Village Title Bar */}
-          <div className="bg-gradient-to-r from-amber-600 to-amber-700 px-4 py-2 border-b-2 border-amber-800">
-            <div className="flex items-center justify-between">
-              <h1 className="text-white font-bold text-lg">
-                {village.name} ({village.x}|{village.y})
-              </h1>
-              <div className="flex items-center gap-2">
-                <Link href="/" className="text-amber-200 hover:text-white text-sm">
-                  <ArrowLeft className="w-4 h-4 inline mr-1" />
-                  Back to Map
-                </Link>
-              </div>
+      {/* Village Content - Direct Overlay on Background */}
+      <div className="relative w-full h-screen">
+        {currentNavSection === 'village' ? (
+          // Village Center - Direct on Background positioned to center the city
+          <div
+            className="absolute w-full h-full"
+            style={{
+              // Center the village area by adjusting background position
+              backgroundPosition: 'center 40%', // Show less trees at top, center the city
+            }}
+          >
+            {/* Invisible clickable overlay positioned for main background */}
+            <div className="absolute inset-0 bottom-100">
+              {/* Building Graphics Overlays - positioned for main background */}
+              {VILLAGE_HOTSPOTS.map((hotspot) => {
+                const building = buildingSlots.find(b => b.id === hotspot.id)
+                if (!building || building.isEmpty) return null
+
+                const buildingType = BUILDING_TYPES[hotspot.buildingType || 0]
+                if (!buildingType) return null
+
+                // Calculate center position from polygon coordinates
+                const coords = hotspot.coords.split(',').map(Number)
+                const xCoords = coords.filter((_, i) => i % 2 === 0)
+                const yCoords = coords.filter((_, i) => i % 2 === 1)
+                const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+                const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+
+                // Convert original coordinates to screen pixels
+                // Original village image was 643x534 pixels
+                // Position relative to the center of the screen where the background is centered
+                const backgroundWidth = 643
+                const backgroundHeight = 534
+
+                // Calculate the center of the screen - fixed positioning for background alignment
+                const screenCenterX = windowSize.width > 0 ? windowSize.width / 2 : 800
+                const screenCenterY = 400 // Fixed vertical center - doesn't change with browser height
+
+                // Position building relative to background center
+                const adjustedX = screenCenterX + (centerX - backgroundWidth / 2)
+                const adjustedY = screenCenterY + (centerY - backgroundHeight / 2)
+
+                return (
+                  <div
+                    key={`building-${hotspot.id}`}
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: `${adjustedX}px`,
+                      top: `${adjustedY}px`,
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  >
+                    <Image
+                      src={`/assets/buildings/${buildingType.img}`}
+                      alt={building.name}
+                      width={50}
+                      height={50}
+                      className="drop-shadow-lg"
+                    />
+                    {building.level > 1 && (
+                      <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold text-[10px] shadow-lg">
+                        {building.level}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+
+              {/* Empty Building Site Indicators - subtle transparent ovals */}
+              {VILLAGE_HOTSPOTS.map((hotspot) => {
+                const building = buildingSlots.find(b => b.id === hotspot.id)
+                if (!building || !building.isEmpty) return null
+
+                // Calculate center position from polygon coordinates
+                const coords = hotspot.coords.split(',').map(Number)
+                const xCoords = coords.filter((_, i) => i % 2 === 0)
+                const yCoords = coords.filter((_, i) => i % 2 === 1)
+                const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+                const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+
+                // Convert original coordinates to screen pixels
+                const backgroundWidth = 643
+                const backgroundHeight = 534
+                const screenCenterX = windowSize.width > 0 ? windowSize.width / 2 : 800
+                const screenCenterY = 400 // Fixed vertical center - doesn't change with browser height
+                const adjustedX = screenCenterX + (centerX - backgroundWidth / 2)
+                const adjustedY = screenCenterY + (centerY - backgroundHeight / 2)
+
+                return (
+                  <div
+                    key={`empty-site-${hotspot.id}`}
+                    className="absolute cursor-pointer group"
+                    style={{
+                      left: `${adjustedX}px`,
+                      top: `${adjustedY}px`,
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                    onClick={() => handleSlotClick(building)}
+                    title="Empty Building Slot"
+                  >
+                    {/* Isometric transparent oval for empty building sites */}
+                    <div
+                      className="bg-yellow-400/20 border border-yellow-300/40 shadow-inner group-hover:bg-yellow-400/40 group-hover:border-yellow-300/60 transition-all duration-200"
+                      style={{
+                        width: '60px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        transform: 'perspective(100px) rotateX(60deg)',
+                      }}
+                    />
+                    {/* Hover tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                      Empty Building Slot
+                    </div>
+                  </div>
+                )
+              })}
+
+              {/* Clickable areas positioned for main background */}
+              {VILLAGE_HOTSPOTS.map((hotspot) => {
+                const building = buildingSlots.find(b => b.id === hotspot.id)
+                if (!building) return null
+
+                const title = building.isEmpty
+                  ? "Empty Building Slot"
+                  : `${building.name} (Level ${building.level})`
+
+                // Calculate center position from polygon coordinates
+                const coords = hotspot.coords.split(',').map(Number)
+                const xCoords = coords.filter((_, i) => i % 2 === 0)
+                const yCoords = coords.filter((_, i) => i % 2 === 1)
+                const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+                const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+
+                // Convert original coordinates to screen pixels  
+                // Original village image was 643x534 pixels
+                // Position relative to the center of the screen where the background is centered
+                const backgroundWidth = 643
+                const backgroundHeight = 534
+
+                // Calculate the center of the screen - fixed positioning for background alignment
+                const screenCenterX = windowSize.width > 0 ? windowSize.width / 2 : 800
+                const screenCenterY = 400 // Fixed vertical center - doesn't change with browser height
+
+                // Position clickable area relative to background center
+                const adjustedX = screenCenterX + (centerX - backgroundWidth / 2)
+                const adjustedY = screenCenterY + (centerY - backgroundHeight / 2)
+
+                return (
+                  <div
+                    key={`hotspot-${hotspot.id}`}
+                    className="absolute cursor-pointer group bg-transparent rounded-lg transition-all duration-200"
+                    style={{
+                      left: `${adjustedX}px`,
+                      top: `${adjustedY}px`,
+                      transform: 'translate(-50%, -50%)',
+                      width: '80px',
+                      height: '80px',
+                    }}
+                    onClick={() => handleSlotClick(building)}
+                    title={title}
+                  >
+                    {/* Hover tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                      {title}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
+        ) : null}
 
-          {isVillageView ? (
-            // Village Center with Original Travian Dimensions - Now Responsive
-            <div className="p-4 bg-green-100">
-              <div className="flex justify-center">
-                <div className="relative inline-block max-w-full">
-                  <Image
-                    src="/assets/slide1_1.jpg"
-                    alt="Village Center"
-                    width={643}
-                    height={534}
-                    className="max-w-full h-auto block shadow-lg rounded-lg border-2 border-amber-600"
-                    priority
-                    useMap="#village-clickareas"
-                  />
+        {currentNavSection === 'resources' && (
+          // Resource Fields View - Direct on Background positioned for resource view
+          <div
+            className="absolute w-full h-full"
+            style={{
+              // Background is already set to resource background via state
+              backgroundPosition: 'center top',
+            }}
+          >
+            {/* Resource Field Hotspots */}
+            {RESOURCE_HOTSPOTS.map((hotspot) => {
+              const field = resourceFields.find(f => f.id === hotspot.id)
+              if (!field) return null
 
-                  {/* Building Graphics Overlays */}
-                  {VILLAGE_HOTSPOTS.map((hotspot) => {
-                    const building = buildingSlots.find(b => b.id === hotspot.id)
-                    if (!building || building.isEmpty) return null
+              // Calculate center position from polygon coordinates
+              const coords = hotspot.coords.split(',').map(Number)
+              const xCoords = coords.filter((_, i) => i % 2 === 0)
+              const yCoords = coords.filter((_, i) => i % 2 === 1)
+              const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+              const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
 
-                    const buildingType = BUILDING_TYPES[hotspot.buildingType || 0]
-                    if (!buildingType) return null
+              // Convert original coordinates to screen pixels
+              // Resource background image dimensions
+              const backgroundWidth = 643
+              const backgroundHeight = 534
 
-                    // Calculate center position from polygon coordinates
-                    const coords = hotspot.coords.split(',').map(Number)
-                    const xCoords = coords.filter((_, i) => i % 2 === 0)
-                    const yCoords = coords.filter((_, i) => i % 2 === 1)
-                    const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
-                    const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+              // Calculate the center of the screen - fixed positioning for background alignment
+              const screenCenterX = windowSize.width > 0 ? windowSize.width / 2 : 800
+              const screenCenterY = 400 // Fixed vertical center - doesn't change with browser height
 
-                    return (
-                      <div
-                        key={`building-${hotspot.id}`}
-                        className="absolute pointer-events-none"
-                        style={{
-                          left: centerX - 25, // Center the 50px wide building image
-                          top: centerY - 25,  // Center the 50px tall building image
-                        }}
-                      >
-                        <Image
-                          src={`/assets/buildings/${buildingType.img}`}
-                          alt={building.name}
-                          width={50}
-                          height={50}
-                          className="drop-shadow-lg"
-                        />
-                        {building.level > 1 && (
-                          <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold text-[10px] shadow-lg">
-                            {building.level}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+              // Position resource field relative to background center
+              const adjustedX = screenCenterX + (centerX - backgroundWidth / 2)
+              const adjustedY = screenCenterY + (centerY - backgroundHeight / 2)
 
-                  {/* Original Travian-style image map with clickable areas */}
-                  <map name="village-clickareas" id="village-clickareas">
-                    {VILLAGE_HOTSPOTS.map((hotspot) => {
-                      const building = buildingSlots.find(b => b.id === hotspot.id)
-                      if (!building) return null
+              return (
+                <div
+                  key={hotspot.id}
+                  onClick={() => handleFieldClick(field)}
+                  className="absolute cursor-pointer group"
+                  style={{
+                    left: `${adjustedX}px`,
+                    top: `${adjustedY}px`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '60px',
+                    height: '40px',
+                  }}
+                >
+                  {/* Field visual indicator */}
+                  <div className="w-full h-full hover:bg-green-400/20 border-2 border-transparent hover:border-green-400 rounded transition-all duration-200 relative">
+                    {/* Level indicator */}
+                    <div className="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center font-bold shadow-lg">
+                      {field.level}
+                    </div>
 
-                      const title = building.isEmpty
-                        ? "Empty Building Slot"
-                        : `${building.name} (Level ${building.level})`
+                    {/* Resource type indicator */}
+                    <div className="absolute -bottom-1 -left-1">
+                      <Image
+                        src={`/assets/resources/${field.type === 'wood' ? '1' : field.type === 'clay' ? '2' : field.type === 'iron' ? '3' : '4'}.gif`}
+                        alt={field.type}
+                        width={20}
+                        height={20}
+                        className="shadow-lg"
+                      />
+                    </div>
+                  </div>
 
-                      return (
-                        <area
-                          key={hotspot.id}
-                          shape="poly"
-                          coords={hotspot.coords}
-                          alt={title}
-                          title={title}
-                          onClick={(e) => {
-                            e.preventDefault()
-                            handleSlotClick(building)
-                          }}
-                          className="cursor-pointer"
-                          style={{ cursor: 'pointer' }}
-                        />
-                      )
-                    })}
-                  </map>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-lg">
+                    <div className="font-bold">{field.type.charAt(0).toUpperCase() + field.type.slice(1)} Field</div>
+                    <div className="text-xs">Level {field.level}</div>
+                    <div className="text-xs text-green-300">+{field.level * 10}/hour</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ) : (
-            // Resource Fields with Background Image and Hotspots
-            <div className="p-4 bg-green-100">
-              <div className="flex justify-center">
-                <div className="relative inline-block max-w-full">
-                  <Image
-                    src="/assets/slide2_1.jpg"
-                    alt="Resource Fields"
-                    width={800}
-                    height={600}
-                    className="max-w-full h-auto shadow-lg rounded-lg border-2 border-amber-600"
-                    priority
-                  />
+              )
+            })}
+          </div>
+        )}
 
-                  {/* Resource Field Hotspots */}
-                  {RESOURCE_HOTSPOTS.map((hotspot) => {
-                    const field = resourceFields.find(f => f.id === hotspot.id)
-                    if (!field) return null
-
-                    return (
-                      <div
-                        key={hotspot.id}
-                        onClick={() => handleFieldClick(field)}
-                        className="absolute cursor-pointer group"
-                        style={{
-                          left: `${hotspot.x}%`,
-                          top: `${hotspot.y}%`,
-                          width: `${hotspot.width}%`,
-                          height: `${hotspot.height}%`,
-                        }}
-                      >
-                        {/* Hotspot overlay */}
-                        <div className="w-full h-full bg-green-400/20 hover:bg-green-400/40 border-2 border-transparent hover:border-green-400 rounded transition-all duration-200">
-                          <div className="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full min-w-[24px] h-6 flex items-center justify-center font-bold shadow-lg">
-                            {field.level}
-                          </div>
-
-                          {/* Resource type indicator */}
-                          <div className="absolute -bottom-2 -left-2">
-                            <Image
-                              src={`/assets/resources/${field.type === 'wood' ? '1' : field.type === 'clay' ? '2' : field.type === 'iron' ? '3' : '4'}.gif`}
-                              alt={field.type}
-                              width={18}
-                              height={18}
-                              className="shadow-lg"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-lg">
-                          <div className="font-bold">{field.type.charAt(0).toUpperCase() + field.type.slice(1)} Field</div>
-                          <div className="text-xs">Level {field.level}</div>
-                          <div className="text-xs text-green-300">+{field.level * 10}/hour</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Modal Content Area for Navigation States */}
       </div>      {/* Upgrade Modal */}
       {showUpgradeModal && (selectedSlot || selectedField) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -633,6 +845,78 @@ export default function VillagePageMock() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Statistics Modal */}
+      {showStatisticsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-yellow-800 to-yellow-900 rounded-lg p-6 max-w-2xl w-full mx-4 border-2 border-yellow-600">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-xl font-bold">Statistics</h3>
+              <button
+                onClick={() => setShowStatisticsModal(false)}
+                className="text-yellow-300 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-yellow-100">Player statistics interface coming soon...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Reports Modal */}
+      {showReportsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-yellow-800 to-yellow-900 rounded-lg p-6 max-w-2xl w-full mx-4 border-2 border-yellow-600">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-xl font-bold">Reports</h3>
+              <button
+                onClick={() => setShowReportsModal(false)}
+                className="text-yellow-300 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-yellow-100">Battle and activity reports coming soon...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Messages Modal */}
+      {showMessagesModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-yellow-800 to-yellow-900 rounded-lg p-6 max-w-2xl w-full mx-4 border-2 border-yellow-600">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-xl font-bold">Messages</h3>
+              <button
+                onClick={() => setShowMessagesModal(false)}
+                className="text-yellow-300 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-yellow-100">Message system coming soon...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Alliance Modal */}
+      {showAllianceModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-yellow-800 to-yellow-900 rounded-lg p-6 max-w-2xl w-full mx-4 border-2 border-yellow-600">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white text-xl font-bold">Alliance</h3>
+              <button
+                onClick={() => setShowAllianceModal(false)}
+                className="text-yellow-300 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-yellow-100">Alliance management interface coming soon...</p>
           </div>
         </div>
       )}
