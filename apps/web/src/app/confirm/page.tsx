@@ -11,7 +11,7 @@ export default function ConfirmationPage() {
   const { user, loading } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const searchParams = useSearchParams()
-  
+
   // Check if this is an email confirmation
   const token = searchParams.get('token')
   const type = searchParams.get('type')
@@ -37,7 +37,7 @@ export default function ConfirmationPage() {
       <div className="game-container min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-white text-xl mb-4">Redirecting to your village...</div>
-          <Link 
+          <Link
             href="/village"
             className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-700 transition-all duration-200"
           >
@@ -81,13 +81,13 @@ export default function ConfirmationPage() {
             <h3 className="text-white font-semibold mb-2">Build Your City</h3>
             <p className="text-gray-400 text-sm">Construct and upgrade buildings to grow your empire and increase resource production.</p>
           </div>
-          
+
           <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 hover:border-red-400/50 transition-colors">
             <Sword className="w-12 h-12 text-red-400 mx-auto mb-3" />
             <h3 className="text-white font-semibold mb-2">Train Your Army</h3>
             <p className="text-gray-400 text-sm">Build barracks and train powerful military units to defend and expand your territory.</p>
           </div>
-          
+
           <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 hover:border-blue-400/50 transition-colors">
             <Users className="w-12 h-12 text-blue-400 mx-auto mb-3" />
             <h3 className="text-white font-semibold mb-2">Form Alliances</h3>
@@ -100,7 +100,7 @@ export default function ConfirmationPage() {
           <Mail className="w-8 h-8 text-blue-400 mx-auto mb-3" />
           <h4 className="text-white font-semibold mb-2">What's Next?</h4>
           <p className="text-gray-400 text-sm">
-            Sign in with the same email address you used to create your account. 
+            Sign in with the same email address you used to create your account.
             Your village and resources are waiting for you!
           </p>
         </div>

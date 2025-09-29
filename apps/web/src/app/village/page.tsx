@@ -94,9 +94,9 @@ export default function VillagePageMock() {
       const ironCost = baseCost * 0.5
       const cropCost = baseCost * 0.3
 
-      if (village.wood >= woodCost && village.clay >= clayCost && 
-          village.iron >= ironCost && village.crop >= cropCost) {
-        
+      if (village.wood >= woodCost && village.clay >= clayCost &&
+        village.iron >= ironCost && village.crop >= cropCost) {
+
         // Deduct resources
         setVillage(prev => ({
           ...prev,
@@ -107,17 +107,17 @@ export default function VillagePageMock() {
         }))
 
         // Upgrade building
-        setBuildings(prev => prev.map(b => 
-          b.id === selectedBuilding.id 
+        setBuildings(prev => prev.map(b =>
+          b.id === selectedBuilding.id
             ? { ...b, level: b.level + 1 }
             : b
         ))
 
         // Update production if it's a resource building
-        if (selectedBuilding.type.includes('woodcutter') || 
-            selectedBuilding.type.includes('clay_pit') ||
-            selectedBuilding.type.includes('iron_mine') ||
-            selectedBuilding.type.includes('cropland')) {
+        if (selectedBuilding.type.includes('woodcutter') ||
+          selectedBuilding.type.includes('clay_pit') ||
+          selectedBuilding.type.includes('iron_mine') ||
+          selectedBuilding.type.includes('cropland')) {
           setVillage(prev => ({
             ...prev,
             wood_production: selectedBuilding.type === 'woodcutter' ? prev.wood_production + 5 : prev.wood_production,
@@ -155,7 +155,7 @@ export default function VillagePageMock() {
             Sign In to Your Empire
           </button>
         </div>
-        
+
         {/* Show features preview */}
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
           <div className="bg-gray-800/50 rounded-lg p-6 text-center">
@@ -256,13 +256,13 @@ export default function VillagePageMock() {
             <h3 className="text-white font-bold mb-1">Build</h3>
             <p className="text-gray-300 text-sm">Construct new buildings</p>
           </Link>
-          
+
           <Link href="/village/troops" className="bg-red-600/20 border border-red-500 rounded-lg p-6 text-center hover:bg-red-600/30 transition-colors">
             <Sword className="w-8 h-8 text-red-400 mx-auto mb-2" />
             <h3 className="text-white font-bold mb-1">Army</h3>
             <p className="text-gray-300 text-sm">Train troops and units</p>
           </Link>
-          
+
           <Link href="/village/reports" className="bg-blue-600/20 border border-blue-500 rounded-lg p-6 text-center hover:bg-blue-600/30 transition-colors">
             <Shield className="w-8 h-8 text-blue-400 mx-auto mb-2" />
             <h3 className="text-white font-bold mb-1">Reports</h3>
@@ -281,7 +281,7 @@ export default function VillagePageMock() {
             <p className="text-gray-300 mb-4">
               Upgrade from level {selectedBuilding.level} to {selectedBuilding.level + 1}
             </p>
-            
+
             <div className="mb-4">
               <h4 className="text-white font-bold mb-2">Cost:</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
