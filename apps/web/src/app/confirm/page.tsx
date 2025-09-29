@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle, Mail, Sword, Building, Users, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import AuthModal from '@/components/AuthModal'
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const { user, loading } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const searchParams = useSearchParams()
@@ -117,5 +117,17 @@ export default function ConfirmationPage() {
         }}
       />
     </div>
+  )
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="game-container min-h-screen flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    }>
+      <ConfirmationContent />
+    </Suspense>
   )
 }

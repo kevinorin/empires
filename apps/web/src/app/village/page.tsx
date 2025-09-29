@@ -74,25 +74,30 @@ const mockVillage: MockVillage = {
   crop_production: 35
 }
 
-// Hotspot coordinates for village buildings (based on Travian village layout)
-// These coordinates are positioned over the village background image
+// Original Travian building coordinates (from dorf2.tpl)
+// These are the exact pixel coordinates used in the original game
 const VILLAGE_HOTSPOTS = [
-  // Main central buildings
-  { id: 1, x: 50, y: 45, width: 8, height: 8, buildingType: 1, level: 1, name: 'Main Building' },
-  { id: 2, x: 35, y: 40, width: 6, height: 6, buildingType: 3, level: 2, name: 'Warehouse' },
-  { id: 3, x: 65, y: 40, width: 6, height: 6, buildingType: 2, level: 2, name: 'Granary' },
-  { id: 4, x: 42, y: 55, width: 6, height: 6, buildingType: 4, level: 1, name: 'Barracks' },
-  { id: 5, x: 58, y: 55, width: 6, height: 6, buildingType: 7, level: 1, name: 'Marketplace' },
-  { id: 6, x: 35, y: 25, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 7, x: 50, y: 25, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 8, x: 65, y: 25, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 9, x: 20, y: 40, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 10, x: 80, y: 40, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 11, x: 25, y: 55, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 12, x: 75, y: 55, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 13, x: 35, y: 70, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 14, x: 50, y: 70, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
-  { id: 15, x: 65, y: 70, width: 5, height: 5, buildingType: 0, level: 0, name: 'Empty Lot' },
+  // Based on original Travian coordinate system (19-38 are building positions)
+  { id: 19, coords: "110,135,132,120,132,121,160,122,179,136,179,151,158,163,128,163,109,149", buildingType: 1, level: 1, name: 'Main Building' },
+  { id: 20, coords: "202,93,223,79,223,79,251,80,271,95,271,109,249,121,220,121,200,108", buildingType: 3, level: 2, name: 'Warehouse' },
+  { id: 21, coords: "290,76,311,61,311,62,339,63,359,77,359,92,337,104,308,104,289,90", buildingType: 2, level: 2, name: 'Granary' },
+  { id: 22, coords: "384,105,406,91,406,91,434,92,453,106,453,121,432,133,402,133,383,120", buildingType: 4, level: 1, name: 'Barracks' },
+  { id: 23, coords: "458,147,479,133,479,133,507,134,527,149,527,164,505,175,476,175,457,162", buildingType: 7, level: 1, name: 'Marketplace' },
+  { id: 24, coords: "71,184,92,170,92,171,120,172,140,186,139,201,118,213,88,213,69,199", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 25, coords: "516,196,538,182,538,182,566,183,585,198,585,212,564,224,534,224,515,211", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 26, coords: "280,113,301,98,301,99,329,100,349,114,348,169,327,181,298,181,278,168", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 27, coords: "97,320,118,306,118,307,146,308,166,322,165,337,144,349,114,349,95,335", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 28, coords: "59,244,80,230,80,230,108,231,128,246,128,260,106,272,77,272,57,259", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 29, coords: "477,249,498,235,498,235,526,236,546,251,545,265,524,277,494,277,475,264", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 30, coords: "181,259,202,245,202,245,230,246,250,261,250,275,228,287,199,287,180,274", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 31, coords: "182,189,203,175,203,175,231,176,251,190,251,205,229,217,200,217,181,204", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 32, coords: "254,308,276,294,276,294,304,295,324,309,323,324,302,336,272,336,253,323", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 33, coords: "505,317,526,303,526,303,554,304,574,319,573,333,552,345,522,345,503,332", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 34, coords: "182,379,204,365,204,365,232,366,251,380,251,395,230,407,200,407,181,394", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 35, coords: "324,370,345,356,345,357,373,358,393,372,392,387,371,398,341,398,322,385", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 36, coords: "433,334,454,320,454,321,482,322,502,336,502,351,480,362,451,362,432,349", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 37, coords: "271,412,292,398,292,399,320,400,340,414,339,429,318,440,289,440,269,427", buildingType: 0, level: 0, name: 'Empty Lot' },
+  { id: 38, coords: "396,396,417,381,417,382,445,383,465,397,464,412,443,424,413,424,394,410", buildingType: 0, level: 0, name: 'Empty Lot' },
 ]
 
 // Resource field hotspots (positioned around the village)
@@ -365,53 +370,46 @@ export default function VillagePageMock() {
       {/* Main Content Area */}
       <div className="container mx-auto p-4">
         {isVillageView ? (
-          // Village Center with Background Image and Hotspots
-          <div className="max-w-5xl mx-auto">
+          // Village Center with Original Travian Dimensions
+          <div className="mx-auto" style={{ width: '643px' }}>
             <div className="relative">
               <Image
                 src="/assets/slide1_1.jpg"
                 alt="Village Center"
-                width={800}
-                height={600}
-                className="w-full h-auto rounded-lg shadow-lg"
+                width={643}
+                height={534}
+                className="block"
                 priority
+                useMap="#village-clickareas"
               />
 
-              {/* Building Hotspots */}
-              {VILLAGE_HOTSPOTS.map((hotspot) => {
-                const building = buildingSlots.find(b => b.id === hotspot.id)
-                if (!building) return null
+              {/* Original Travian-style image map with clickable areas */}
+              <map name="village-clickareas" id="village-clickareas">
+                {VILLAGE_HOTSPOTS.map((hotspot) => {
+                  const building = buildingSlots.find(b => b.id === hotspot.id)
+                  if (!building) return null
 
-                return (
-                  <div
-                    key={hotspot.id}
-                    onClick={() => handleSlotClick(building)}
-                    className="absolute cursor-pointer group"
-                    style={{
-                      left: `${hotspot.x}%`,
-                      top: `${hotspot.y}%`,
-                      width: `${hotspot.width}%`,
-                      height: `${hotspot.height}%`,
-                    }}
-                  >
-                    {/* Hotspot overlay */}
-                    <div className="w-full h-full bg-yellow-400/20 hover:bg-yellow-400/40 border-2 border-transparent hover:border-yellow-400 rounded transition-all duration-200">
-                      {building.level > 0 && (
-                        <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full min-w-[24px] h-6 flex items-center justify-center font-bold shadow-lg">
-                          {building.level}
-                        </div>
-                      )}
-                    </div>
+                  const title = building.isEmpty
+                    ? "Empty Building Slot"
+                    : `${building.name} (Level ${building.level})`
 
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-lg">
-                      <div className="font-bold">{building.name}</div>
-                      {building.level > 0 && <div className="text-xs">Level {building.level}</div>}
-                      {building.isEmpty && <div className="text-xs text-gray-300">Click to build</div>}
-                    </div>
-                  </div>
-                )
-              })}
+                  return (
+                    <area
+                      key={hotspot.id}
+                      shape="poly"
+                      coords={hotspot.coords}
+                      alt={title}
+                      title={title}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        handleSlotClick(building)
+                      }}
+                      className="cursor-pointer"
+                      style={{ cursor: 'pointer' }}
+                    />
+                  )
+                })}
+              </map>
             </div>
           </div>
         ) : (
