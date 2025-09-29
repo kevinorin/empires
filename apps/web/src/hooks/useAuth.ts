@@ -54,36 +54,92 @@ export function useAuth() {
 
         if (session?.user) {
           console.log('Fetching profile for user:', session.user.id)
-          // Fetch user profile
-          const { data: profileData, error: profileError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          try {
+            // Fetch user profile with timeout
+            const profilePromise = supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single()
 
-          console.log('Profile fetch result:', { profileData, profileError })
-          setProfile(profileData)
+            // Add 10 second timeout to prevent hanging
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+            )
 
-          // Send welcome email on first successful login (after email confirmation)
-          if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
-            console.log('📧 User signed in for first time, sending welcome email')
-            fetch('/api/send-welcome-email', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ userId: session.user.id }),
-            }).then(response => {
-              if (response.ok) {
-                console.log('📧 Welcome email sent successfully')
+            const { data: profileData, error: profileError } = await Promise.race([
+              profilePromise,
+              timeoutPromise
+            ]) as any
+
+            console.log('Profile fetch result:', { profileData, profileError })
+
+            if (profileError) {
+              console.error('Profile fetch error:', profileError)
+
+              // If profile doesn't exist (but user is authenticated), create it
+              if (profileError.code === 'PGRST116') { // No rows found
+                console.log('Profile not found, creating profile for user:', session.user.id)
+                try {
+                  const response = await fetch('/api/create-profile', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      userId: session.user.id,
+                      email: session.user.email
+                    }),
+                  })
+
+                  if (response.ok) {
+                    const newProfile = await response.json()
+                    console.log('Profile created successfully:', newProfile)
+                    setProfile(newProfile.profile)
+                  } else {
+                    console.error('Failed to create profile:', response.status)
+                    setProfile(null)
+                  }
+                } catch (createError) {
+                  console.error('Error creating profile:', createError)
+                  setProfile(null)
+                }
+              } else {
+                // Other error, set profile to null
+                setProfile(null)
               }
-            }).catch(err => console.error('📧 Failed to send welcome email:', err))
+            } else {
+              setProfile(profileData)
+            }
+
+            // Send welcome email on first successful login (after email confirmation)
+            if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
+              console.log('📧 User signed in for first time, sending welcome email')
+              fetch('/api/send-welcome-email', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: session.user.id }),
+              }).then(response => {
+                if (response.ok) {
+                  console.log('📧 Welcome email sent successfully')
+                } else {
+                  console.log('📧 Welcome email failed, status:', response.status)
+                }
+              }).catch(err => console.error('📧 Failed to send welcome email:', err))
+            }
+          } catch (error) {
+            console.error('Error in auth state change:', error)
+            setProfile(null)
+          } finally {
+            // Always set loading to false regardless of success/failure
+            setLoading(false)
           }
         } else {
           setProfile(null)
+          setLoading(false)
         }
-
-        setLoading(false)
       }
     )
 

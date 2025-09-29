@@ -58,12 +58,15 @@ const mockBuildings: MockBuilding[] = [
 ]
 
 export default function VillagePageMock() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading } = useAuth()
   const [village, setVillage] = useState<MockVillage>(mockVillage)
   const [buildings, setBuildings] = useState<MockBuilding[]>(mockBuildings)
   const [selectedBuilding, setSelectedBuilding] = useState<MockBuilding | null>(null)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+
+  // Debug logging
+  console.log('Village page render:', { user: !!user, profile: !!profile, authLoading })
 
   // Simulate resource production every 5 seconds
   useEffect(() => {
