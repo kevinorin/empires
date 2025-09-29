@@ -40,22 +40,22 @@ interface ResourceField {
 
 // Travian building types mapping
 const BUILDING_TYPES: Record<number, { name: string; img: string; description: string }> = {
-  0: { name: 'Empty Lot', img: '4.gif', description: 'Build something here' },
-  1: { name: 'Main Building', img: '26.gif', description: 'Village center' },
-  2: { name: 'Granary', img: '11.gif', description: 'Stores crop' },
-  3: { name: 'Warehouse', img: '10.gif', description: 'Stores wood, clay, iron' },
-  4: { name: 'Barracks', img: '19.gif', description: 'Train infantry' },
-  5: { name: 'Stable', img: '20.gif', description: 'Train cavalry' },
-  6: { name: 'Workshop', img: '21.gif', description: 'Build siege weapons' },
-  7: { name: 'Marketplace', img: '17.gif', description: 'Trade resources' },
-  8: { name: 'Embassy', img: '18.gif', description: 'Diplomacy and alliances' },
-  9: { name: 'Academy', img: '22.gif', description: 'Research technologies' },
-  10: { name: 'Cranny', img: '23.gif', description: 'Hide resources' },
-  11: { name: 'Town Hall', img: '24.gif', description: 'Organize celebrations' },
-  12: { name: 'Residence', img: '25.gif', description: 'Train settlers' },
-  13: { name: 'Palace', img: '25.gif', description: 'Train settlers and chiefs' },
-  14: { name: 'Treasury', img: '27.gif', description: 'Store treasures' },
-  15: { name: 'Smithy', img: '13.gif', description: 'Improve weapons' },
+  0: { name: 'Empty Lot', img: 'g4.gif', description: 'Build something here' },
+  1: { name: 'Main Building', img: 'g26.gif', description: 'Village center' },
+  2: { name: 'Granary', img: 'g11.gif', description: 'Stores crop' },
+  3: { name: 'Warehouse', img: 'g10.gif', description: 'Stores wood, clay, iron' },
+  4: { name: 'Barracks', img: 'g19.gif', description: 'Train infantry' },
+  5: { name: 'Stable', img: 'g20.gif', description: 'Train cavalry' },
+  6: { name: 'Workshop', img: 'g21.gif', description: 'Build siege weapons' },
+  7: { name: 'Marketplace', img: 'g17.gif', description: 'Trade resources' },
+  8: { name: 'Embassy', img: 'g18.gif', description: 'Diplomacy and alliances' },
+  9: { name: 'Academy', img: 'g22.gif', description: 'Research technologies' },
+  10: { name: 'Cranny', img: 'g23.gif', description: 'Hide resources' },
+  11: { name: 'Town Hall', img: 'g24.gif', description: 'Organize celebrations' },
+  12: { name: 'Residence', img: 'g25.gif', description: 'Train settlers' },
+  13: { name: 'Palace', img: 'g25.gif', description: 'Train settlers and chiefs' },
+  14: { name: 'Treasury', img: 'g27.gif', description: 'Store treasures' },
+  15: { name: 'Smithy', img: 'g13.gif', description: 'Improve weapons' },
 }
 
 const mockVillage: MockVillage = {
@@ -300,8 +300,12 @@ export default function VillagePageMock() {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/assets/background.jpg')" }}
+      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ 
+        backgroundImage: isVillageView 
+          ? "url('/assets/bgBuildings-main-background.jpg')" 
+          : "url('/assets/bgResources-main-background.jpg')" 
+      }}
     >
       {/* Authentic Travian Header */}
       <div className="bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-700 border-b-4 border-amber-800 shadow-lg">
@@ -316,7 +320,7 @@ export default function VillagePageMock() {
                 Server: {village.name}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="text-amber-100 text-sm">
                 Player: {profile?.username || user?.email?.split('@')[0] || 'Guest'}
@@ -365,21 +369,19 @@ export default function VillagePageMock() {
           <div className="flex items-center gap-0">
             <button
               onClick={() => setIsVillageView(true)}
-              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${
-                isVillageView
+              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${isVillageView
                   ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
                   : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
-              }`}
+                }`}
             >
               Village Center
             </button>
             <button
               onClick={() => setIsVillageView(false)}
-              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${
-                !isVillageView
+              className={`px-4 py-2 font-semibold text-sm transition-all duration-200 rounded-t-lg border-2 border-b-0 ${!isVillageView
                   ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-lg transform translate-y-1'
                   : 'bg-amber-600 text-amber-100 border-amber-700 hover:bg-amber-500'
-              }`}
+                }`}
             >
               Resource Fields
             </button>
@@ -388,151 +390,172 @@ export default function VillagePageMock() {
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Authentic Travian Layout */}
       <div className="container mx-auto p-4">
-        {isVillageView ? (
-          // Village Center with Original Travian Dimensions
-          <div className="mx-auto" style={{ width: '643px' }}>
-            <div className="relative">
-              <Image
-                src="/assets/slide1_1.jpg"
-                alt="Village Center"
-                width={643}
-                height={534}
-                className="block"
-                priority
-                useMap="#village-clickareas"
-              />
-
-              {/* Building Graphics Overlays */}
-              {VILLAGE_HOTSPOTS.map((hotspot) => {
-                const building = buildingSlots.find(b => b.id === hotspot.id)
-                if (!building || building.isEmpty) return null
-
-                const buildingType = BUILDING_TYPES[hotspot.buildingType || 0]
-                if (!buildingType) return null
-
-                // Calculate center position from polygon coordinates
-                const coords = hotspot.coords.split(',').map(Number)
-                const xCoords = coords.filter((_, i) => i % 2 === 0)
-                const yCoords = coords.filter((_, i) => i % 2 === 1)
-                const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
-                const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
-
-                return (
-                  <div
-                    key={`building-${hotspot.id}`}
-                    className="absolute pointer-events-none"
-                    style={{
-                      left: centerX - 25, // Center the 50px wide building image
-                      top: centerY - 25,  // Center the 50px tall building image
-                    }}
-                  >
-                    <Image
-                      src={`/assets/buildings/${buildingType.img}`}
-                      alt={building.name}
-                      width={50}
-                      height={50}
-                      className="drop-shadow-lg"
-                    />
-                    {building.level > 1 && (
-                      <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold text-[10px] shadow-lg">
-                        {building.level}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-
-              {/* Original Travian-style image map with clickable areas */}
-              <map name="village-clickareas" id="village-clickareas">
-                {VILLAGE_HOTSPOTS.map((hotspot) => {
-                  const building = buildingSlots.find(b => b.id === hotspot.id)
-                  if (!building) return null
-
-                  const title = building.isEmpty
-                    ? "Empty Building Slot"
-                    : `${building.name} (Level ${building.level})`
-
-                  return (
-                    <area
-                      key={hotspot.id}
-                      shape="poly"
-                      coords={hotspot.coords}
-                      alt={title}
-                      title={title}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        handleSlotClick(building)
-                      }}
-                      className="cursor-pointer"
-                      style={{ cursor: 'pointer' }}
-                    />
-                  )
-                })}
-              </map>
+        <div className="bg-amber-50/95 rounded-lg shadow-2xl border-4 border-amber-600 overflow-hidden">
+          {/* Village Title Bar */}
+          <div className="bg-gradient-to-r from-amber-600 to-amber-700 px-4 py-2 border-b-2 border-amber-800">
+            <div className="flex items-center justify-between">
+              <h1 className="text-white font-bold text-lg">
+                {village.name} ({village.x}|{village.y})
+              </h1>
+              <div className="flex items-center gap-2">
+                <Link href="/" className="text-amber-200 hover:text-white text-sm">
+                  <ArrowLeft className="w-4 h-4 inline mr-1" />
+                  Back to Map
+                </Link>
+              </div>
             </div>
           </div>
-        ) : (
-          // Resource Fields with Background Image and Hotspots
-          <div className="max-w-5xl mx-auto">
-            <div className="relative">
-              <Image
-                src="/assets/slide2_1.jpg"
-                alt="Resource Fields"
-                width={800}
-                height={600}
-                className="w-full h-auto rounded-lg shadow-lg"
-                priority
-              />
 
-              {/* Resource Field Hotspots */}
-              {RESOURCE_HOTSPOTS.map((hotspot) => {
-                const field = resourceFields.find(f => f.id === hotspot.id)
-                if (!field) return null
+          {isVillageView ? (
+            // Village Center with Original Travian Dimensions - Now Responsive
+            <div className="p-4 bg-green-100">
+              <div className="flex justify-center">
+                <div className="relative inline-block max-w-full">
+                  <Image
+                    src="/assets/slide1_1.jpg"
+                    alt="Village Center"
+                    width={643}
+                    height={534}
+                    className="max-w-full h-auto block shadow-lg rounded-lg border-2 border-amber-600"
+                    priority
+                    useMap="#village-clickareas"
+                  />
 
-                return (
-                  <div
-                    key={hotspot.id}
-                    onClick={() => handleFieldClick(field)}
-                    className="absolute cursor-pointer group"
-                    style={{
-                      left: `${hotspot.x}%`,
-                      top: `${hotspot.y}%`,
-                      width: `${hotspot.width}%`,
-                      height: `${hotspot.height}%`,
-                    }}
-                  >
-                    {/* Hotspot overlay */}
-                    <div className="w-full h-full bg-green-400/20 hover:bg-green-400/40 border-2 border-transparent hover:border-green-400 rounded transition-all duration-200">
-                      <div className="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full min-w-[24px] h-6 flex items-center justify-center font-bold shadow-lg">
-                        {field.level}
-                      </div>
+                  {/* Building Graphics Overlays */}
+                  {VILLAGE_HOTSPOTS.map((hotspot) => {
+                    const building = buildingSlots.find(b => b.id === hotspot.id)
+                    if (!building || building.isEmpty) return null
 
-                      {/* Resource type indicator */}
-                      <div className="absolute -bottom-2 -left-2">
+                    const buildingType = BUILDING_TYPES[hotspot.buildingType || 0]
+                    if (!buildingType) return null
+
+                    // Calculate center position from polygon coordinates
+                    const coords = hotspot.coords.split(',').map(Number)
+                    const xCoords = coords.filter((_, i) => i % 2 === 0)
+                    const yCoords = coords.filter((_, i) => i % 2 === 1)
+                    const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+                    const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+
+                    return (
+                      <div
+                        key={`building-${hotspot.id}`}
+                        className="absolute pointer-events-none"
+                        style={{
+                          left: centerX - 25, // Center the 50px wide building image
+                          top: centerY - 25,  // Center the 50px tall building image
+                        }}
+                      >
                         <Image
-                          src={`/assets/resources/${field.type === 'wood' ? '1' : field.type === 'clay' ? '2' : field.type === 'iron' ? '3' : '4'}.gif`}
-                          alt={field.type}
-                          width={20}
-                          height={20}
-                          className="shadow-lg"
+                          src={`/assets/buildings/${buildingType.img}`}
+                          alt={building.name}
+                          width={50}
+                          height={50}
+                          className="drop-shadow-lg"
                         />
+                        {building.level > 1 && (
+                          <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold text-[10px] shadow-lg">
+                            {building.level}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )
+                  })}
 
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-lg">
-                      <div className="font-bold">{field.type.charAt(0).toUpperCase() + field.type.slice(1)} Field</div>
-                      <div className="text-xs">Level {field.level}</div>
-                      <div className="text-xs text-green-300">+{field.level * 10}/hour</div>
-                    </div>
-                  </div>
-                )
-              })}
+                  {/* Original Travian-style image map with clickable areas */}
+                  <map name="village-clickareas" id="village-clickareas">
+                    {VILLAGE_HOTSPOTS.map((hotspot) => {
+                      const building = buildingSlots.find(b => b.id === hotspot.id)
+                      if (!building) return null
+
+                      const title = building.isEmpty
+                        ? "Empty Building Slot"
+                        : `${building.name} (Level ${building.level})`
+
+                      return (
+                        <area
+                          key={hotspot.id}
+                          shape="poly"
+                          coords={hotspot.coords}
+                          alt={title}
+                          title={title}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            handleSlotClick(building)
+                          }}
+                          className="cursor-pointer"
+                          style={{ cursor: 'pointer' }}
+                        />
+                      )
+                    })}
+                  </map>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            // Resource Fields with Background Image and Hotspots
+            <div className="p-4 bg-green-100">
+              <div className="flex justify-center">
+                <div className="relative inline-block max-w-full">
+                  <Image
+                    src="/assets/slide2_1.jpg"
+                    alt="Resource Fields"
+                    width={800}
+                    height={600}
+                    className="max-w-full h-auto shadow-lg rounded-lg border-2 border-amber-600"
+                    priority
+                  />
+
+                  {/* Resource Field Hotspots */}
+                  {RESOURCE_HOTSPOTS.map((hotspot) => {
+                    const field = resourceFields.find(f => f.id === hotspot.id)
+                    if (!field) return null
+
+                    return (
+                      <div
+                        key={hotspot.id}
+                        onClick={() => handleFieldClick(field)}
+                        className="absolute cursor-pointer group"
+                        style={{
+                          left: `${hotspot.x}%`,
+                          top: `${hotspot.y}%`,
+                          width: `${hotspot.width}%`,
+                          height: `${hotspot.height}%`,
+                        }}
+                      >
+                        {/* Hotspot overlay */}
+                        <div className="w-full h-full bg-green-400/20 hover:bg-green-400/40 border-2 border-transparent hover:border-green-400 rounded transition-all duration-200">
+                          <div className="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full min-w-[24px] h-6 flex items-center justify-center font-bold shadow-lg">
+                            {field.level}
+                          </div>
+
+                          {/* Resource type indicator */}
+                          <div className="absolute -bottom-2 -left-2">
+                            <Image
+                              src={`/assets/resources/${field.type === 'wood' ? '1' : field.type === 'clay' ? '2' : field.type === 'iron' ? '3' : '4'}.gif`}
+                              alt={field.type}
+                              width={18}
+                              height={18}
+                              className="shadow-lg"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-lg">
+                          <div className="font-bold">{field.type.charAt(0).toUpperCase() + field.type.slice(1)} Field</div>
+                          <div className="text-xs">Level {field.level}</div>
+                          <div className="text-xs text-green-300">+{field.level * 10}/hour</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>      {/* Upgrade Modal */}
       {showUpgradeModal && (selectedSlot || selectedField) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
