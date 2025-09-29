@@ -4,25 +4,37 @@ import { useState } from 'react'
 
 export default function TestEmailPage() {
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('TestEmperor')
+  const [tribe, setTribe] = useState('Romans')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState('')
 
   const sendTestEmail = async (type: string) => {
-    if (!email) return
+    if (!email) {
+      setResult('Please enter an email address')
+      return
+    }
 
     setLoading(true)
-    setResult('')
+    setResult('Sending test email...')
 
     try {
+      console.log('📧 Sending test email request...')
       const response = await fetch('/api/test-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, type }),
+        body: JSON.stringify({
+          email,
+          type,
+          username,
+          tribe
+        }),
       })
 
       const data = await response.json()
+      console.log('📧 Test email response:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to send email')
@@ -84,8 +96,8 @@ export default function TestEmailPage() {
 
             {result && (
               <div className={`p-3 rounded text-center ${result.includes('✅')
-                  ? 'bg-green-900/20 border border-green-500 text-green-400'
-                  : 'bg-red-900/20 border border-red-500 text-red-400'
+                ? 'bg-green-900/20 border border-green-500 text-green-400'
+                : 'bg-red-900/20 border border-red-500 text-red-400'
                 }`}>
                 {result}
               </div>

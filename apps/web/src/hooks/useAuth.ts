@@ -45,16 +45,19 @@ export function useAuth() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, { user: !!session?.user })
         setUser(session?.user ?? null)
 
         if (session?.user) {
+          console.log('Fetching profile for user:', session.user.id)
           // Fetch user profile
-          const { data: profileData } = await supabase
+          const { data: profileData, error: profileError } = await supabase
             .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single()
 
+          console.log('Profile fetch result:', { profileData, profileError })
           setProfile(profileData)
         } else {
           setProfile(null)

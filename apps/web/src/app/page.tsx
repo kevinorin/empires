@@ -9,6 +9,9 @@ export default function HomePage() {
   const { user, profile, loading, signOut } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
 
+  // Debug logging
+  console.log('HomePage render:', { user: !!user, profile: !!profile, loading })
+
   if (loading) {
     return (
       <div className="game-container min-h-screen flex items-center justify-center">

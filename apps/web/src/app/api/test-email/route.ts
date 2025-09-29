@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { EmailService } from '@/lib/email'
+import { emailService } from '@/lib/smtp2go'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, type } = await request.json()
+    const { email, type, username, tribe } = await request.json()
 
     if (!email) {
       return NextResponse.json(
@@ -16,17 +16,15 @@ export async function POST(request: NextRequest) {
 
     switch (type) {
       case 'welcome':
-        result = await EmailService.sendWelcomeEmail('TestPlayer', email, 1)
-        break
-      case 'alliance':
-        result = await EmailService.sendAllianceInvitation(email, 'TestPlayer', 'Elite Warriors', 'AdminPlayer')
-        break
-      case 'reset':
-        result = await EmailService.sendPasswordResetEmail(email, 'http://localhost:3000/reset-password?token=test123')
+        result = await emailService.sendWelcomeEmail(
+          email,
+          username || 'TestPlayer',
+          tribe || 'Romans'
+        )
         break
       default:
         return NextResponse.json(
-          { error: 'Invalid email type' },
+          { error: 'Invalid email type. Use "welcome".' },
           { status: 400 }
         )
     }

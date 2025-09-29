@@ -99,12 +99,32 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         }
       }
 
+      if (!isLogin) {
+        // For signup, show success message about email confirmation
+        setError('')
+        alert('Account created successfully! Please check your email and click the confirmation link before signing in.')
+      }
+
       console.log('Auth flow completed successfully')
       onSuccess()
       onClose()
     } catch (error: any) {
       console.error('Auth error:', error)
-      setError(error.message)
+
+      // Provide better error messages
+      if (error.message === 'Invalid login credentials') {
+        if (isLogin) {
+          setError('Invalid email or password. Make sure you\'ve confirmed your account via email first.')
+        } else {
+          setError('This email is already registered. Please sign in instead.')
+        }
+      } else if (error.message.includes('Email not confirmed')) {
+        setError('Please check your email and confirm your account before signing in.')
+      } else if (error.message.includes('already registered')) {
+        setError('This email is already registered. Please sign in instead.')
+      } else {
+        setError(error.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -144,11 +164,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   ]
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 border border-yellow-500 rounded-lg p-8 max-w-md w-full mx-4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Sword className="w-6 h-6 text-yellow-400" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 border border-yellow-500 rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <Sword className="w-5 h-5 text-yellow-400" />
             {isLogin ? 'Enter Empire' : 'Join Empire'}
           </h2>
           <button
@@ -159,7 +179,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           </button>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4">
+        <form onSubmit={handleAuth} className="space-y-3">
           {!isLogin && (
             <div>
               <label className="block text-white mb-2">
@@ -207,26 +227,24 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           {!isLogin && (
             <div>
               <label className="block text-white mb-2">Choose Your Tribe</label>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {tribes.map((t) => (
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setTribe(t.id as 1 | 2 | 3)}
-                    className={`p-3 rounded border-2 text-left transition-colors ${tribe === t.id
+                    onClick={() => setTribe(t.id as 1 | 2 | 3 | 4 | 5)}
+                    className={`p-2 rounded border text-center transition-colors ${tribe === t.id
                       ? 'border-yellow-500 bg-yellow-500/20 text-white'
                       : 'border-gray-600 bg-gray-800 text-gray-300 hover:border-gray-500'
                       }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{t.icon}</span>
-                      <div>
-                        <div className="font-bold">{t.name}</div>
-                        <div className="text-sm opacity-80">{t.description}</div>
-                      </div>
-                    </div>
+                    <div className="text-lg mb-1">{t.icon}</div>
+                    <div className="text-sm font-bold">{t.name}</div>
                   </button>
                 ))}
+              </div>
+              <div className="text-xs text-gray-400 mt-2">
+                {tribes.find(t => t.id === tribe)?.description}
               </div>
             </div>
           )}
