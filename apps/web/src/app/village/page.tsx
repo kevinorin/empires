@@ -39,23 +39,23 @@ interface ResourceField {
 }
 
 // Travian building types mapping
-const BUILDING_TYPES = {
-  0: { name: 'Empty Lot', img: 'g4.gif', description: 'Build something here' },
-  1: { name: 'Main Building', img: 'g26.gif', description: 'Village center' },
-  2: { name: 'Granary', img: 'g11.gif', description: 'Stores crop' },
-  3: { name: 'Warehouse', img: 'g10.gif', description: 'Stores wood, clay, iron' },
-  4: { name: 'Barracks', img: 'g19.gif', description: 'Train infantry' },
-  5: { name: 'Stable', img: 'g20.gif', description: 'Train cavalry' },
-  6: { name: 'Workshop', img: 'g21.gif', description: 'Build siege weapons' },
-  7: { name: 'Marketplace', img: 'g17.gif', description: 'Trade resources' },
-  8: { name: 'Embassy', img: 'g18.gif', description: 'Diplomacy and alliances' },
-  9: { name: 'Academy', img: 'g22.gif', description: 'Research technologies' },
-  10: { name: 'Cranny', img: 'g23.gif', description: 'Hide resources' },
-  11: { name: 'Town Hall', img: 'g24.gif', description: 'Organize celebrations' },
-  12: { name: 'Residence', img: 'g25.gif', description: 'Train settlers' },
-  13: { name: 'Palace', img: 'g25.gif', description: 'Train settlers and chiefs' },
-  14: { name: 'Treasury', img: 'g27.gif', description: 'Store treasures' },
-  15: { name: 'Smithy', img: 'g13.gif', description: 'Improve weapons' },
+const BUILDING_TYPES: Record<number, { name: string; img: string; description: string }> = {
+  0: { name: 'Empty Lot', img: '4.gif', description: 'Build something here' },
+  1: { name: 'Main Building', img: '26.gif', description: 'Village center' },
+  2: { name: 'Granary', img: '11.gif', description: 'Stores crop' },
+  3: { name: 'Warehouse', img: '10.gif', description: 'Stores wood, clay, iron' },
+  4: { name: 'Barracks', img: '19.gif', description: 'Train infantry' },
+  5: { name: 'Stable', img: '20.gif', description: 'Train cavalry' },
+  6: { name: 'Workshop', img: '21.gif', description: 'Build siege weapons' },
+  7: { name: 'Marketplace', img: '17.gif', description: 'Trade resources' },
+  8: { name: 'Embassy', img: '18.gif', description: 'Diplomacy and alliances' },
+  9: { name: 'Academy', img: '22.gif', description: 'Research technologies' },
+  10: { name: 'Cranny', img: '23.gif', description: 'Hide resources' },
+  11: { name: 'Town Hall', img: '24.gif', description: 'Organize celebrations' },
+  12: { name: 'Residence', img: '25.gif', description: 'Train settlers' },
+  13: { name: 'Palace', img: '25.gif', description: 'Train settlers and chiefs' },
+  14: { name: 'Treasury', img: '27.gif', description: 'Store treasures' },
+  15: { name: 'Smithy', img: '13.gif', description: 'Improve weapons' },
 }
 
 const mockVillage: MockVillage = {
@@ -382,6 +382,46 @@ export default function VillagePageMock() {
                 priority
                 useMap="#village-clickareas"
               />
+
+              {/* Building Graphics Overlays */}
+              {VILLAGE_HOTSPOTS.map((hotspot) => {
+                const building = buildingSlots.find(b => b.id === hotspot.id)
+                if (!building || building.isEmpty) return null
+
+                const buildingType = BUILDING_TYPES[hotspot.buildingType || 0]
+                if (!buildingType) return null
+
+                // Calculate center position from polygon coordinates
+                const coords = hotspot.coords.split(',').map(Number)
+                const xCoords = coords.filter((_, i) => i % 2 === 0)
+                const yCoords = coords.filter((_, i) => i % 2 === 1)
+                const centerX = xCoords.reduce((a, b) => a + b, 0) / xCoords.length
+                const centerY = yCoords.reduce((a, b) => a + b, 0) / yCoords.length
+
+                return (
+                  <div
+                    key={`building-${hotspot.id}`}
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: centerX - 25, // Center the 50px wide building image
+                      top: centerY - 25,  // Center the 50px tall building image
+                    }}
+                  >
+                    <Image
+                      src={`/assets/buildings/${buildingType.img}`}
+                      alt={building.name}
+                      width={50}
+                      height={50}
+                      className="drop-shadow-lg"
+                    />
+                    {building.level > 1 && (
+                      <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold text-[10px] shadow-lg">
+                        {building.level}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
 
               {/* Original Travian-style image map with clickable areas */}
               <map name="village-clickareas" id="village-clickareas">
