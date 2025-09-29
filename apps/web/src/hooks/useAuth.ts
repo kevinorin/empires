@@ -45,7 +45,11 @@ export function useAuth() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, { user: !!session?.user })
+        console.log('Auth state change:', event, {
+          user: !!session?.user,
+          userConfirmed: session?.user?.email_confirmed_at,
+          session: !!session
+        })
         setUser(session?.user ?? null)
 
         if (session?.user) {
@@ -59,6 +63,22 @@ export function useAuth() {
 
           console.log('Profile fetch result:', { profileData, profileError })
           setProfile(profileData)
+
+          // Send welcome email on first successful login (after email confirmation)
+          if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
+            console.log('📧 User signed in for first time, sending welcome email')
+            fetch('/api/send-welcome-email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ userId: session.user.id }),
+            }).then(response => {
+              if (response.ok) {
+                console.log('📧 Welcome email sent successfully')
+              }
+            }).catch(err => console.error('📧 Failed to send welcome email:', err))
+          }
         } else {
           setProfile(null)
         }

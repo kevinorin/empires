@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { emailService } from '@/lib/smtp2go'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+// Use the service role key for server-side operations (bypasses RLS)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +22,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user profile from database
+    // Get user profile from database using admin client (bypasses RLS)
     console.log('🔍 Fetching user profile from database...')
-    const { data: user, error } = await supabase
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('username, email, tribe')
       .eq('id', userId)

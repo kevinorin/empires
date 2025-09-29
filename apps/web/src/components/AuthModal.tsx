@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { User, Mail, Lock, Sword } from 'lucide-react'
+import { empiresToast } from '@/lib/toast'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -46,55 +47,49 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         })
         if (error) throw error
 
-        // The trigger should automatically create the user profile
-        // If it doesn't work, we might need to manually create it
-        if (data.user && data.session) {
-          // Wait a moment for the trigger to complete
-          await new Promise(resolve => setTimeout(resolve, 500))
+        console.log('Signup data:', data)
 
-          // Check if profile was created, if not, create it manually
-          const { data: profile, error: fetchError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', data.user.id)
-            .single()
+        // Handle user creation (both with and without email confirmation)
+        if (data.user) {
+          console.log('✅ User account created, user ID:', data.user.id)
 
-          if (fetchError || !profile) {
-            console.log('Profile not found, creating manually...')
-            console.log('User ID:', data.user.id)
-            console.log('Username:', username)
-            console.log('Email:', email)
-            console.log('Tribe:', tribe)
-
-            const { error: profileError } = await supabase
-              .from('users')
-              .insert({
-                id: data.user.id,
-                username,
-                email,
-                tribe,
-              })
-
-            if (profileError) {
-              console.error('Profile creation error:', profileError)
-              console.error('Error details:', JSON.stringify(profileError, null, 2))
-              // Don't throw here, as the user is still authenticated
-            } else {
-              console.log('Profile created successfully!')
-            }
-          } else {
-            console.log('Profile found:', profile)
-          }
-
-          // Send welcome email (don't await to avoid blocking UI)
-          if (data.user) {
-            fetch('/api/send-welcome-email', {
+          // Create user profile via server-side API (bypasses RLS issues)
+          console.log('🔄 Creating user profile via API...')
+          try {
+            const profileResponse = await fetch('/api/create-profile', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ userId: data.user.id }),
-            }).catch(err => console.error('Failed to send welcome email:', err))
+              body: JSON.stringify({
+                userId: data.user.id,
+                email,
+                username,
+                tribe,
+              }),
+            })
+
+            if (!profileResponse.ok) {
+              const errorText = await profileResponse.text()
+              console.error('❌ Profile creation failed:', errorText)
+            } else {
+              const profileData = await profileResponse.json()
+              console.log('✅ User profile created successfully:', profileData)
+            }
+          } catch (err) {
+            console.error('❌ Profile creation error:', err)
+          }
+
+          // Welcome email will be sent after email confirmation via webhook or login
+          console.log('✅ Profile created, user will receive welcome email after confirming email')
+
+          // Check if email confirmation is required
+          if (!data.session) {
+            // Email confirmation required
+            setError('')
+            empiresToast.success(`🎉 Empire created! Check your email (${email}) for the activation link. Click it, then sign in here to start building!`)
+            onClose()
+            return
           }
         }
       }
@@ -102,7 +97,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
       if (!isLogin) {
         // For signup, show success message about email confirmation
         setError('')
-        alert('Account created successfully! Please check your email and click the confirmation link before signing in.')
+        empiresToast.success('🎉 Empire created! Check your email for the activation link, then sign in to start building!')
       }
 
       console.log('Auth flow completed successfully')
@@ -263,6 +258,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Empire'}
           </button>
         </form>
+
+        {isLogin && (
+          <div className="mt-3 text-center">
+            <p className="text-gray-400 text-xs">
+              💡 New empire? Check your email for the activation link first!
+            </p>
+          </div>
+        )}
 
         <div className="mt-4 text-center">
           <button

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { Building, Plus, Hammer, Sword, Shield, Users, Home, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import AuthModal from '@/components/AuthModal'
 
 interface MockVillage {
   id: string
@@ -62,6 +63,7 @@ export default function VillagePageMock() {
   const [buildings, setBuildings] = useState<MockBuilding[]>(mockBuildings)
   const [selectedBuilding, setSelectedBuilding] = useState<MockBuilding | null>(null)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   // Simulate resource production every 5 seconds
   useEffect(() => {
@@ -140,8 +142,38 @@ export default function VillagePageMock() {
 
   if (!user) {
     return (
-      <div className="game-container min-h-screen flex items-center justify-center">
-        <div className="text-white text-xl">Please log in to access your village.</div>
+      <div className="game-container min-h-screen flex flex-col items-center justify-center">
+        <div className="max-w-md mx-auto text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4">🏛️ Welcome to Your Empire!</h1>
+          <p className="text-gray-300 mb-6">
+            Your account has been confirmed! Please sign in to access your village and start building your empire.
+          </p>
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-yellow-700 transition-all duration-200"
+          >
+            Sign In to Your Empire
+          </button>
+        </div>
+        
+        {/* Show features preview */}
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
+          <div className="bg-gray-800/50 rounded-lg p-6 text-center">
+            <Building className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Build & Upgrade</h3>
+            <p className="text-gray-400 text-sm">Construct buildings to grow your empire</p>
+          </div>
+          <div className="bg-gray-800/50 rounded-lg p-6 text-center">
+            <Sword className="w-12 h-12 text-red-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Train Armies</h3>
+            <p className="text-gray-400 text-sm">Build powerful military units</p>
+          </div>
+          <div className="bg-gray-800/50 rounded-lg p-6 text-center">
+            <Users className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Join Alliances</h3>
+            <p className="text-gray-400 text-sm">Team up with other players</p>
+          </div>
+        </div>
       </div>
     )
   }
@@ -289,6 +321,17 @@ export default function VillagePageMock() {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setShowAuthModal(false)
+          // Refresh the page or reload user data
+          window.location.reload()
+        }}
+      />
     </div>
   )
 }

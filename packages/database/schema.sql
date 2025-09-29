@@ -226,43 +226,76 @@ ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
 -- Authentication Functions and Triggers
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  -- Create user profile
+  -- Insert user profile into public.users table
   INSERT INTO public.users (id, email, username, tribe)
   VALUES (
-    new.id,
-    new.email,
-    COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
-    COALESCE((new.raw_user_meta_data->>'tribe')::integer, 1)
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
+    COALESCE((NEW.raw_user_meta_data->>'tribe')::integer, 1)
   );
-  
-  -- Create initial village
+
+  -- Create initial village for the user
   INSERT INTO public.villages (name, x, y, owner_id)
   VALUES (
     'Capital City',
-    0, -- Can be randomized later
-    0, -- Can be randomized later  
-    new.id
+    floor(random() * 200 - 100)::integer,
+    floor(random() * 200 - 100)::integer,
+    NEW.id
   );
-  
-  RETURN new;
+
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Log the error but don't fail the auth process
+    RAISE LOG 'Error in handle_new_user: %', SQLERRM;
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Trigger to automatically create user profile and village on signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+
+-- Grant necessary permissions to the function
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
 
 -- RLS Policies for proper authentication
-CREATE POLICY "Users can manage own data" ON users FOR ALL 
-USING (auth.uid()::text = id::text)
+DROP POLICY IF EXISTS "Users can manage own data" ON users;
+DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON users;
+DROP POLICY IF EXISTS "Enable read access for own profile" ON users;
+DROP POLICY IF EXISTS "Enable update for own profile" ON users;
+DROP POLICY IF EXISTS "Enable delete for own profile" ON users;
+
+-- Create more permissive policies for signup flow
+CREATE POLICY "Enable insert for authenticated users only" ON users 
+FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Enable read access for own profile" ON users 
+FOR SELECT USING (auth.uid()::text = id::text);
+
+CREATE POLICY "Enable update for own profile" ON users 
+FOR UPDATE USING (auth.uid()::text = id::text)
 WITH CHECK (auth.uid()::text = id::text);
 
-CREATE POLICY "Users can manage own villages" ON villages FOR ALL 
-USING (auth.uid()::text = owner_id::text)
+CREATE POLICY "Enable delete for own profile" ON users 
+FOR DELETE USING (auth.uid()::text = id::text);
+
+DROP POLICY IF EXISTS "Users can manage own villages" ON villages;
+DROP POLICY IF EXISTS "Enable village access for owner" ON villages;
+DROP POLICY IF EXISTS "Enable village insert for authenticated" ON villages;
+
+CREATE POLICY "Enable village access for owner" ON villages 
+FOR ALL USING (auth.uid()::text = owner_id::text)
 WITH CHECK (auth.uid()::text = owner_id::text);
 
 CREATE POLICY "Users can manage buildings in own villages" ON buildings FOR ALL USING (

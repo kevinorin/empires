@@ -109,9 +109,9 @@ export class SMTP2GOEmailService {
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/village" 
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/confirm" 
                  style="background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                Enter Your Village
+                Enter Your Empire
               </a>
             </div>
             
@@ -153,7 +153,7 @@ Quick Start Tips:
 • Join an alliance for protection and cooperation
 • Explore the world map to find expansion opportunities
 
-Visit your village: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/village
+Enter your empire: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/confirm
 
 The realm awaits your command, Emperor ${username}!
 May your empire prosper! ${tribeEmoji}
