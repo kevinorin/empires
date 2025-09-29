@@ -158,7 +158,7 @@ export default function VillagePageMock() {
   const [showStatisticsModal, setShowStatisticsModal] = useState(false)
   const [showReportsModal, setShowReportsModal] = useState(false)
   const [showMessagesModal, setShowMessagesModal] = useState(false)
-  const [showAllianceModal, setShowAllianceModal] = useState(false)
+  const [showWorldMapModal, setShowWorldMapModal] = useState(false)
   const [isVillageView, setIsVillageView] = useState(true) // Toggle between village and resources
   const [currentNavSection, setCurrentNavSection] = useState('village') // Track navigation section
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
@@ -374,7 +374,7 @@ export default function VillagePageMock() {
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-124px] hover:bg-[0_-186px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-124px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -391,7 +391,7 @@ export default function VillagePageMock() {
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_0] hover:bg-[0_-62px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_0] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -401,15 +401,15 @@ export default function VillagePageMock() {
 
               {/* World Map Navigation */}
               <button
-                onClick={() => setShowAllianceModal(true)}
+                onClick={() => setShowWorldMapModal(true)}
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-310px] hover:bg-[0_-372px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-310px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Alliance
+                  World Map
                 </div>
               </button>
 
@@ -419,7 +419,7 @@ export default function VillagePageMock() {
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-372px] hover:bg-[0_-186px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-372px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -433,7 +433,7 @@ export default function VillagePageMock() {
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-558px] hover:bg-[0_-248px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-558px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -447,7 +447,7 @@ export default function VillagePageMock() {
                 className="group relative inline-block border border-[#553420] rounded-full bg-gradient-to-b from-[#cbb198] to-[#7b6050] shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_3px_3px_0_rgba(0,0,0,0.3)] transition-all duration-150 hover:shadow-[inset_0_1px_0_0_#ddcbb7,inset_0_-1px_0_0_#664f3d,inset_1px_0_0_0_#bba693,inset_-1px_0_0_0_#7d6651,0_1px_1px_0_rgba(0,0,0,0.3)] active:transform active:translate-y-[1px]"
               >
                 <div
-                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-682px] hover:bg-[0_-310px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
+                  className="bg-[url('/assets/interface/navigation.png')] bg-[0_-682px] w-[62px] h-[62px] absolute top-[1px] left-[1px] pointer-events-none transition-[top] duration-150 group-active:top-[2px]"
                 />
                 <div className="w-16 h-16 flex items-center justify-center" />
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -878,20 +878,20 @@ export default function VillagePageMock() {
         </div>
       )}
 
-      {/* Alliance Modal */}
-      {showAllianceModal && (
+      {/* World Map Modal */}
+      {showWorldMapModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gradient-to-br from-yellow-800 to-yellow-900 rounded-lg p-6 max-w-2xl w-full mx-4 border-2 border-yellow-600">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white text-xl font-bold">Alliance</h3>
+              <h3 className="text-white text-xl font-bold">World Map</h3>
               <button
-                onClick={() => setShowAllianceModal(false)}
+                onClick={() => setShowWorldMapModal(false)}
                 className="text-yellow-300 hover:text-white text-xl"
               >
                 ×
               </button>
             </div>
-            <p className="text-yellow-100">Alliance management interface coming soon...</p>
+            <p className="text-yellow-100">World map interface coming soon...</p>
           </div>
         </div>
       )}
